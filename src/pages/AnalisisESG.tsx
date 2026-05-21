@@ -150,8 +150,8 @@ export default function AnalisisESG({ navigate, namaUsaha }: AnalisisESGProps) {
           <button
             type="button"
             onClick={() => {
-              alert("Mengalihkan ke simulasi pengajuan Kredit Hijau Plafon Rp 25.000.000...");
-              navigate("dashboard");
+              alert("Mengalihkan ke simulasi pengajuan Kredit Hijau..");
+              navigate("pengajuan-kredit" as any);
             }}
             className="w-full sm:w-auto inline-flex items-center justify-center font-bold text-xs px-6 py-4 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-[0_8px_20px_-4px_rgba(224,92,42,0.4)] hover:shadow-[0_12px_24px_-4px_rgba(224,92,42,0.5)] hover:-translate-y-0.5 tracking-wider uppercase group"
           >

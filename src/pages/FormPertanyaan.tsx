@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { PageName } from "../App";
 
-interface Step1Props {
+interface FormPertanyaanProps {
   navigate: (page: PageName) => void;
+  step: number;
 }
 
-export default function Step1({ navigate }: Step1Props) {
-  // 1. State posisi halaman kuesioner (1 = Environment, 2 = Social, 3 = Governance)
+export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) {
+  // State posisi aspek internal kuesioner (1 = Environment, 2 = Social, 3 = Governance)
   const [currentStep, setCurrentStep] = useState(1);
 
-  // 2. State untuk menampung jawaban dari 12 pertanyaan ESG
+  // Efek biar pas awal buka halaman, step-nya langsung sinkron dengan router App.tsx
+  useEffect(() => {
+    if (step >= 1 && step <= 3) {
+      setCurrentStep(step);
+    } else if (step === 4) {
+      // Jika dari router dikirim step 4, kita set langsung ke halaman final (Governance)
+      setCurrentStep(3);
+    }
+  }, [step]);
+
+  // State untuk menampung jawaban dari 12 pertanyaan ESG
   const [answers, setAnswers] = useState({
     // Aspek Environment
     q1_listrik: "",
@@ -35,16 +46,29 @@ export default function Step1({ navigate }: Step1Props) {
 
   // Navigasi antar halaman kuesioner
   const handleNext = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (currentStep === 1) {
+      // Validasi singkat halaman 1 sebelum lanjut
+      if (!answers.q1_listrik || !answers.q2_energi || !answers.q3_limbah || !answers.q4_bahanBaku) {
+        alert("Silakan isi semua pertanyaan di aspek Lingkungan terlebih dahulu!");
+        return;
+      }
+      setCurrentStep(2);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (currentStep === 2) {
+      // Validasi singkat halaman 2 sebelum lanjut
+      if (!answers.q5_karyawan || !answers.q6_lokal || !answers.q7_jaminan || !answers.q8_upah) {
+        alert("Silakan isi semua pertanyaan di aspek Sosial terlebih dahulu!");
+        return;
+      }
+      setCurrentStep(3);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       navigate("upload"); // Kembali ke halaman upload jika di step paling awal
     }
@@ -53,14 +77,14 @@ export default function Step1({ navigate }: Step1Props) {
   // Handler submit akhir kuesioner
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validasi singkat halaman ke-3 sebelum submit
+    // Validasi halaman ke-3 sebelum submit
     if (!answers.q9_izin || !answers.q10_pembukuan || !answers.q11_rekening || !answers.q12_rencana) {
-      alert("Silakan lengkapi semua pertanyaan di halaman ini terlebih dahulu!");
+      alert("Silakan lengkapi semua pertanyaan di aspek Tata Kelola terlebih dahulu!");
       return;
     }
     
     alert("Evaluasi ESG Berhasil Disubmit! Menghitung Skor Anda...");
-    // Alur: Kembali ke Dashboard untuk menampilkan visual hasil analisis utama
+    // Alur: Pindah ke page analisis untuk menampilkan rapor hasil akhir skor ESG
     navigate("analisis");
   };
 
@@ -81,7 +105,7 @@ export default function Step1({ navigate }: Step1Props) {
             {currentStep === 3 && "🏢 Aspek Tata Kelola (Governance)"}
           </h2>
           <p className="mt-1.5 text-xs text-gray-400 font-medium">
-            {currentStep === 1 && "Evaluasi penggunaan energi, emisi, dan pengelolaan limbah usaha Anda."}
+            {currentStep === 1 && "Evaluasi penggunaan energi, emisi, and pengelolaan limbah usaha Anda."}
             {currentStep === 2 && "Evaluasi hubungan tenaga kerja, keselamatan kerja, dan dampak komunitas."}
             {currentStep === 3 && "Evaluasi legalitas perizinan, struktur bisnis, dan pembukuan finansial."}
           </p>
@@ -103,7 +127,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q1_c", val: "C", txt: "Efisien (< Rp 500 Ribu / Bulan)" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q1_listrik === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q1" checked={answers.q1_listrik === opt.val} onChange={() => handleRadioChange("q1_listrik", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q1" checked={answers.q1_listrik === opt.val} onChange={() => handleRadioChange("q1_listrik", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -120,7 +144,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q2_c", val: "C", txt: "Sudah kombinasi Energi Terbarukan (Solar Panel / dll)" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q2_energi === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q2" checked={answers.q2_energi === opt.val} onChange={() => handleRadioChange("q2_energi", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q2" checked={answers.q2_energi === opt.val} onChange={() => handleRadioChange("q2_energi", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -137,7 +161,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q3_c", val: "C", txt: "Didaur ulang / diolah mandiri bekerjasama dengan bank sampah" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q3_limbah === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q3" checked={answers.q3_limbah === opt.val} onChange={() => handleRadioChange("q3_limbah", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q3" checked={answers.q3_limbah === opt.val} onChange={() => handleRadioChange("q3_limbah", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -154,7 +178,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q4_c", val: "C", txt: "Sudah tersertifikasi ramah lingkungan secara menyeluruh" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q4_bahanBaku === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q4" checked={answers.q4_bahanBaku === opt.val} onChange={() => handleRadioChange("q4_bahanBaku", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q4" checked={answers.q4_bahanBaku === opt.val} onChange={() => handleRadioChange("q4_bahanBaku", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -173,10 +197,10 @@ export default function Step1({ navigate }: Step1Props) {
                   {[
                     { id: "q5_a", val: "A", txt: "Mikro (1 - 5 Orang)" },
                     { id: "q5_b", val: "B", txt: "Kecil (6 - 20 Orang)" },
-                    { id: "q5_c", val: "C", txt: "Menengah (&gt; 20 Orang)" }
+                    { id: "q5_c", val: "C", txt: "Menengah (> 20 Orang)" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q5_karyawan === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q5" checked={answers.q5_karyawan === opt.val} onChange={() => handleRadioChange("q5_karyawan", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q5" checked={answers.q5_karyawan === opt.val} onChange={() => handleRadioChange("q5_karyawan", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -188,12 +212,12 @@ export default function Step1({ navigate }: Step1Props) {
                 <label className="block text-sm font-bold text-gray-200">6. Berapa persentase penyerapan tenaga kerja lokal dari wilayah sekitar tempat usaha?</label>
                 <div className="grid grid-cols-1 gap-2.5">
                   {[
-                    { id: "q6_a", val: "A", txt: "Rendah (&lt; 50% dari total staf)" },
+                    { id: "q6_a", val: "A", txt: "Rendah (< 50% dari total staf)" },
                     { id: "q6_b", val: "B", txt: "Sangat Baik (50% - 80% warga lokal)" },
-                    { id: "q6_c", val: "C", txt: "Prioritas Penuh (&gt; 80% memberdayakan masyarakat sekitar)" }
+                    { id: "q6_c", val: "C", txt: "Prioritas Penuh (> 80% memberdayakan masyarakat sekitar)" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q6_lokal === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q6" checked={answers.q6_lokal === opt.val} onChange={() => handleRadioChange("q6_lokal", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q6" checked={answers.q6_lokal === opt.val} onChange={() => handleRadioChange("q6_lokal", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -210,7 +234,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q7_c", val: "C", txt: "Sudah terdaftar jaminan kesehatan resmi (BPJS / Asuransi Staf)" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q7_jaminan === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q7" checked={answers.q7_jaminan === opt.val} onChange={() => handleRadioChange("q7_jaminan", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q7" checked={answers.q7_jaminan === opt.val} onChange={() => handleRadioChange("q7_jaminan", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -227,7 +251,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q8_c", val: "C", txt: "Sudah memiliki sistem shift berkontrak tertulis yang disepakati layak" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q8_upah === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q8" checked={answers.q8_upah === opt.val} onChange={() => handleRadioChange("q8_upah", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q8" checked={answers.q8_upah === opt.val} onChange={() => handleRadioChange("q8_upah", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -249,7 +273,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q9_c", val: "C", txt: "Lengkap (NIB, SIUP, NPWP Badan, atau Sertifikasi Halal/terkait)" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q9_izin === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q9" checked={answers.q9_izin === opt.val} onChange={() => handleRadioChange("q9_izin", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q9" checked={answers.q9_izin === opt.val} onChange={() => handleRadioChange("q9_izin", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -266,7 +290,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q10_c", val: "C", txt: "Sudah mengadopsi Aplikasi Pembukuan Finansial Digital khusus UMKM" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q10_pembukuan === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q10" checked={answers.q10_pembukuan === opt.val} onChange={() => handleRadioChange("q10_pembukuan", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q10" checked={answers.q10_pembukuan === opt.val} onChange={() => handleRadioChange("q10_pembukuan", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -283,7 +307,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q11_c", val: "C", txt: "Terpisah 100% mutlak dengan pembukuan kas yang profesional" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q11_rekening === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q11" checked={answers.q11_rekening === opt.val} onChange={() => handleRadioChange("q11_rekening", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q11" checked={answers.q11_rekening === opt.val} onChange={() => handleRadioChange("q11_rekening", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}
@@ -300,7 +324,7 @@ export default function Step1({ navigate }: Step1Props) {
                     { id: "q12_c", val: "C", txt: "Memiliki struktur organisasi dan target bisnis bulanan yang jelas" }
                   ].map((opt) => (
                     <label key={opt.id} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${answers.q12_rencana === opt.val ? "bg-[#e05c2a]/10 border-[#e05c2a]" : "bg-[#4a4a4a] border-white/5 hover:border-white/10"}`}>
-                      <input type="radio" name="q12" checked={answers.q12_rencana === opt.val} onChange={() => handleRadioChange("q12_rencana", opt.val)} className="accent-[#e05c2a] w-4 h-4" required />
+                      <input type="radio" name="q12" checked={answers.q12_rencana === opt.val} onChange={() => handleRadioChange("q12_rencana", opt.val)} className="accent-[#e05c2a] w-4 h-4" />
                       <span className="text-xs font-semibold text-gray-200">{opt.txt}</span>
                     </label>
                   ))}

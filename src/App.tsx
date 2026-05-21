@@ -5,7 +5,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TambahUsaha from "./pages/TambahUsaha";
 import FormPertanyaan from "./pages/FormPertanyaan";
-import AnalisisESG from "./pages/AnalisisESG"; // 1. Import halaman analisis baru kita
+import AnalisisESG from "./pages/AnalisisESG";
+import PengajuanKreditHijau from "./pages/PengajuanKreditHijau";
 import "./index.css";
 
 // Definisi tipe string halaman resmi aplikasi (ditambahkan 'analisis')
@@ -19,7 +20,8 @@ export type PageName =
   | "step2"
   | "step3"
   | "step4"
-  | "analisis"; // 2. Daftarkan tipe halaman analisis disini
+  | "analisis"
+  | "pengajuan-kredit";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageName>("home");
@@ -63,13 +65,20 @@ export default function App() {
     case "step4":
       return <FormPertanyaan navigate={navigate} step={4} />;
     case "analisis":
-      // 5. Render halaman analisis dengan melempar data namaUsaha secara dinamis
       return (
         <AnalisisESG 
           navigate={navigate} 
           namaUsaha={businessData.namaUsaha} 
         />
       );
+    case "pengajuan-kredit":
+      return (
+        <PengajuanKreditHijau 
+          navigate={navigate} 
+          namaUsaha={businessData.namaUsaha}
+        />
+      );
+
     default:
       return <Index navigate={navigate} />;
   }
