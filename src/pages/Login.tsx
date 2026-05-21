@@ -24,11 +24,10 @@ function Login() {
       localStorage.setItem("token", response.data.token);
 
       if (response.data.user.id_role === 2) {
-        window.location.assign("/admin/dashboard");
+        window.location.assign("/dashboard");
       } else {
         window.location.assign("/dashboard");
       }
-      
     } catch (err) {
       if (isAxiosError<{ message?: string }>(err)) {
         setError(err.response?.data?.message ?? "Login gagal");
@@ -46,7 +45,7 @@ function Login() {
       {/* Background Effects */}
       <div className="absolute top-0 left-1/4 w-48 sm:w-64 md:w-80 lg:w-96 h-48 sm:h-64 md:h-80 lg:h-96 bg-ftech-orange/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-48 sm:w-64 md:w-80 lg:w-96 h-48 sm:h-64 md:h-80 lg:h-96 bg-blue-500/10 rounded-full blur-3xl" />
-      
+
       <form
         onSubmit={handleSubmit}
         className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg flex flex-col gap-3 sm:gap-4 lg:gap-5 rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 md:p-7 lg:p-8 shadow-2xl backdrop-blur-md"
@@ -57,20 +56,14 @@ function Login() {
             F
           </div>
         </div>
-        
+
         <div className="text-center">
-          <p className="text-xs sm:text-sm md:text-base font-semibold uppercase tracking-wider text-ftech-orange">
-            F-Tech Solution
-          </p>
+          <p className="text-xs sm:text-sm md:text-base font-semibold uppercase tracking-wider text-ftech-orange">F-Tech Solution</p>
           <h1 className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold">Selamat Datang</h1>
           <p className="mt-2 text-white/60 text-xs sm:text-sm md:text-base">Masuk untuk mengakses dashboard Anda</p>
         </div>
 
-        {error && (
-          <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-red-200">
-            {error}
-          </p>
-        )}
+        {error && <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-red-200">{error}</p>}
 
         <label className="flex flex-col gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium">
           <span className="text-white/80">Email</span>
@@ -117,7 +110,9 @@ function Login() {
               </svg>
               Memproses...
             </span>
-          ) : "Masuk"}
+          ) : (
+            "Masuk"
+          )}
         </button>
 
         <div className="relative my-1.5 sm:my-2 lg:my-3">
