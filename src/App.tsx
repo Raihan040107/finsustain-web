@@ -7,7 +7,7 @@ import TambahUsaha from "./pages/TambahUsaha";
 import FormPertanyaan from "./pages/FormPertanyaan";
 import "./index.css";
 
-// Tipe navigasi string untuk validasi antar halaman
+// Definisi tipe string halaman resmi aplikasi
 export type PageName =
   | "home"
   | "dashboard"
@@ -24,10 +24,10 @@ export default function App() {
 
   const navigate = (page: PageName) => {
     setCurrentPage(page);
-    window.scrollTo(0, 0); // Otomatis balik ke atas layar saat pindah halaman
+    window.scrollTo(0, 0); // Layar otomatis kembali ke atas saat pindah halaman
   };
 
-  // Navigasi Router Berdasarkan State Kondisional
+  // Router pengkondisian komponen aktif
   switch (currentPage) {
     case "home":
       return <Index navigate={navigate} />;
