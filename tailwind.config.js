@@ -4,12 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-<<<<<<< HEAD
-        // Tentukan warna aksen oranye dari desain
-        'ftech-orange': '#D96D4B', // Perkiraan warna oranye-merah dari gambar
-        'ftech-dark': '#303236',   // Perkiraan warna latar belakang gelap utama
-        'ftech-medium': '#525459', // Perkiraan warna latar belakang gelap medium
-=======
+        "ftech-orange": "#D96D4B",
+        "ftech-medium": "#525459",
         "ftech-dark": "#2d2d2d",
         "ftech-mid": "#3a3a3a",
         "ftech-card": "rgba(255,255,255,0.07)",
@@ -23,7 +19,6 @@ export default {
       fontFamily: {
         head: ["Syne", "sans-serif"],
         body: ["DM Sans", "sans-serif"],
->>>>>>> 015e9a275408a351252ab15a6852c65f47ba998d
       },
     },
   },
