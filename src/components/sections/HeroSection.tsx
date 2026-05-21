@@ -1,102 +1,83 @@
-  import React from "react";
-  import Button from "../ui/Button";
+import type { PageName } from "../../App";
 
-  const HeroSection: React.FC = () => {
-    return (
-      <section className="relative min-h-screen pt-24 pb-12 px-6 overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-ftech-dark via-ftech-medium to-ftech-dark/90" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-ftech-orange/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djJoLTJ2LTJoMnptLTItNHYyaC0ydi0yaDJ6bTAtNHYyaC0ydi0yaDJ6bTQtNHYyaC0ydi0yaDJ6bTQtNHYyaC0ydi0yaDJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
-
-        <div className="relative grid md:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
-          {/* Kolom Kiri - Teks & Tombol */}
-          <div className="space-y-8 flex flex-col items-start justify-center md:pl-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ftech-orange/20 border border-ftech-orange/30 text-ftech-orange text-sm font-medium">
-              <span className="w-2 h-2 rounded-full bg-ftech-orange animate-pulse" />
-              Platform ESG Terdepan
+export const MockScreen = ({ variant = "home" }: { variant?: "home" | "logged" }) => (
+  <div className="mock-screen">
+    <div className="monitor-body">
+      <div className="monitor-bar">
+        <div className="monitor-dot red"></div>
+        <div className="monitor-dot yellow"></div>
+        <div className="monitor-dot green"></div>
+      </div>
+      <div className="mock-dashboard">
+        <div className="mock-sidebar">
+          <div style={{ fontSize: "0.6rem", color: "var(--text-muted)", marginBottom: "4px", fontWeight: 700 }}>
+            {variant === "logged" ? "F-Tech" : "Fin-Sustain"}
+          </div>
+          <div className="mock-sidebar-item active">Analisa ESG</div>
+          <div className="mock-sidebar-item">Analysis</div>
+          <div className="mock-sidebar-item">Score & Reports</div>
+        </div>
+        <div className="mock-main">
+          <div className="mock-title">ESG Dashboard</div>
+          <div className="mock-cards">
+            <div className="mock-card">
+              <div>{variant === "logged" ? "Skor ESG Klien" : "Skor ESG"}</div>
+              <div className="mock-card-val">{variant === "logged" ? "30" : "65"}</div>
+              <div>/100</div>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              Evaluasi & Manajemen
-              <span className="block text-ftech-orange mt-2">Dampak ESG</span>
-            </h1>
-            <p className="text-lg text-white/80 max-w-xl leading-relaxed">
-              Optimalkan kredit hijau dan dampak bisnis Anda dengan teknologi AI yang cerdas. 
-              Solusi komprehensif untuk masa depan berkelanjutan.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <Button variant="solid" onClick={() => window.location.assign("/register")} className="px-8 py-3 text-lg">
-                Mulai Sekarang
-              </Button>
-              <Button variant="outline" onClick={() => window.location.assign("/login")} className="px-8 py-3 text-lg">
-                Masuk
-              </Button>
+            <div className="mock-card">
+              <div>Emisi Karbon</div>
+              <div className="mock-card-val" style={{ color: "#4caf50" }}>{variant === "logged" ? "100%" : "−12%"}</div>
             </div>
-            
-            {/* Stats */}
-            <div className="flex gap-8 pt-8 border-t border-white/10">
-              <div>
-                <p className="text-3xl font-bold text-white">500+</p>
-                <p className="text-sm text-white/60">Usaha Terdaftar</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-white">98%</p>
-                <p className="text-sm text-white/60">Akurasi AI</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-white">24/7</p>
-                <p className="text-sm text-white/60">Dukungan</p>
-              </div>
+            <div className="mock-card">
+              <div>{variant === "logged" ? "Kepatuhan" : "Kredit Hijau"}</div>
+              <div className="mock-card-val" style={{ color: "var(--accent)" }}>{variant === "logged" ? "78%" : "7,5%"}</div>
             </div>
           </div>
-
-          {/* Kolom Kanan - Visual */}
-          <div className="hidden md:flex items-center justify-center">
-            <div className="relative w-full max-w-md aspect-square">
-              {/* Card Utama */}
-              <div className="absolute inset-0 bg-gradient-to-br from-ftech-orange/30 to-transparent rounded-3xl border border-white/10 backdrop-blur-sm p-8 flex flex-col justify-center">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-ftech-orange/20 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-ftech-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">ESG Score</p>
-                      <p className="text-2xl font-bold text-ftech-orange">A+</p>
-                    </div>
-                  </div>
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full w-[85%] bg-gradient-to-r from-ftech-orange to-orange-400 rounded-full" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 pt-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">92</p>
-                      <p className="text-xs text-white/60">Lingkungan</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">88</p>
-                      <p className="text-xs text-white/60">Sosial</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">90</p>
-                      <p className="text-xs text-white/60">Governance</p>
-                    </div>
-                  </div>
-                </div>
+          <div className="mock-charts">
+            <div className="mock-chart">
+              <div style={{ fontSize: "0.55rem", marginBottom: "4px" }}>{variant === "logged" ? "Kepatuhan Karyawan" : "Lingkungan"}</div>
+              <div className="mock-chart-bars">
+                {[40, 65, 50, 80, 60].map((h, i) => <div key={i} className="bar" style={{ height: `${h}%` }}></div>)}
               </div>
-              {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-ftech-orange/20 rounded-full blur-xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-500/20 rounded-full blur-xl" />
+            </div>
+            <div className="mock-chart">
+              <div style={{ fontSize: "0.55rem", marginBottom: "4px" }}>{variant === "logged" ? "Tata Kelola" : "Tata Kelola"}</div>
+              <div className="mock-chart-bars">
+                {[70, 45, 90, 55, 75].map((h, i) => <div key={i} className="bar" style={{ height: `${h}%` }}></div>)}
+              </div>
             </div>
           </div>
         </div>
-      </section>
-    );
-  };
+      </div>
+    </div>
+    <div className="monitor-stand"></div>
+    <div className="monitor-foot"></div>
+  </div>
+);
 
-  export default HeroSection;
+export default function HeroSection({ navigate }: { navigate: (page: PageName) => void }) {
+  return (
+    <section className="lp-hero">
+      <div className="lp-hero-inner">
+        <div className="hero-left">
+          <div className="hero-tag">
+            <svg viewBox="0 0 24 24" style={{ width: "14px", height: "14px", fill: "currentColor" }}>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+            </svg>
+            Platform ESG & Green Finance untuk UMKM
+          </div>
+          <h1>Evaluasi &amp; <span>Manajemen Dampak</span> ESG Bisnis Anda</h1>
+          <p>Fin-Sustain UMKM hadir untuk membantu pelaku usaha kecil dan menengah mengukur keberlanjutan bisnis, mendapatkan rekomendasi otomatis, dan mengakses kredit hijau dengan bunga lebih rendah.</p>
+          <div className="hero-btns">
+            <button className="btn btn-primary btn-lg" onClick={() => navigate("register")}>Mulai Gratis →</button>
+            <button className="btn btn-outline btn-lg" onClick={() => navigate("login")}>Sudah Punya Akun</button>
+          </div>
+        </div>
+        <div className="hero-right">
+          <MockScreen variant="home" />
+        </div>
+      </div>
+    </section>
+  );
+}
