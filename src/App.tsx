@@ -5,9 +5,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import TambahUsaha from "./pages/TambahUsaha";
 import FormPertanyaan from "./pages/FormPertanyaan";
+import AnalisisESG from "./pages/AnalisisESG"; // 1. Import halaman analisis baru kita
 import "./index.css";
 
-// Definisi tipe string halaman resmi aplikasi
+// Definisi tipe string halaman resmi aplikasi (ditambahkan 'analisis')
 export type PageName =
   | "home"
   | "dashboard"
@@ -17,10 +18,18 @@ export type PageName =
   | "step1"
   | "step2"
   | "step3"
-  | "step4";
+  | "step4"
+  | "analisis"; // 2. Daftarkan tipe halaman analisis disini
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageName>("home");
+
+  // 3. State global untuk menyimpan profil usaha dari halaman TambahUsaha
+  const [businessData, setBusinessData] = useState({
+    namaUsaha: "Toko Sinar Mentari", // Nama default sesuai use case kelompok lu
+    bidangUsaha: "",
+    alamatUsaha: ""
+  });
 
   const navigate = (page: PageName) => {
     setCurrentPage(page);
@@ -38,7 +47,13 @@ export default function App() {
     case "register":
       return <Register navigate={navigate} />;
     case "upload":
-      return <TambahUsaha navigate={navigate} />;
+      // 4. Oper fungsi setGlobalBusiness ke komponen TambahUsaha
+      return (
+        <TambahUsaha 
+          navigate={navigate} 
+          setGlobalBusiness={(data) => setBusinessData(data)} 
+        />
+      );
     case "step1":
       return <FormPertanyaan navigate={navigate} step={1} />;
     case "step2":
@@ -47,6 +62,14 @@ export default function App() {
       return <FormPertanyaan navigate={navigate} step={3} />;
     case "step4":
       return <FormPertanyaan navigate={navigate} step={4} />;
+    case "analisis":
+      // 5. Render halaman analisis dengan melempar data namaUsaha secara dinamis
+      return (
+        <AnalisisESG 
+          navigate={navigate} 
+          namaUsaha={businessData.namaUsaha} 
+        />
+      );
     default:
       return <Index navigate={navigate} />;
   }
