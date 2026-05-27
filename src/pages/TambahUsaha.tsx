@@ -1,207 +1,190 @@
 import React, { useState } from "react";
-import type { PageName } from "../App";
+import type { BusinessData } from "../App";
 
 interface TambahUsahaProps {
-  navigate: (page: PageName) => void;
-  // Menambahkan prop untuk mengirimkan data ke state global App.tsx
-  setGlobalBusiness: (data: { namaUsaha: string; bidangUsaha: string; alamatUsaha: string }) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  setBusinessList: React.Dispatch<React.SetStateAction<BusinessData[]>>; 
 }
 
-export default function TambahUsaha({ navigate, setGlobalBusiness }: TambahUsahaProps) {
-  // 1. State untuk Profil Usaha
+export default function TambahUsaha({ isOpen, onClose, setBusinessList }: TambahUsahaProps) {
+  const [step, setStep] = useState(1);
+
+  // State isi form
   const [namaUsaha, setNamaUsaha] = useState("");
-  const [namaPemilik, setNamaPemilik] = useState("");
+  const [pemilik, setPemilik] = useState("");
   const [bidangUsaha, setBidangUsaha] = useState("");
-  const [alamatUsaha, setAlamatUsaha] = useState("");
+  const [kota, setKota] = useState("");
 
-  // 2. State untuk File Dokumen
-  const [ktpName, setKtpName] = useState("");
-  const [npwpName, setNpwpName] = useState("");
-  const [izinName, setIzinName] = useState("");
+  if (!isOpen) return null;
 
-  const handleNextStep = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNext = () => { if (step < 3) setStep(step + 1); };
+  const handleBack = () => { if (step > 1) setStep(step - 1); };
+
+  const handleDirectSubmit = () => {
+    console.log("Aman! Tombol 'Ajukan Dokumen Usaha' berhasil di-klik.");
+
+    const finalNamaUsaha = namaUsaha.trim() || "PT Sinar Mandiri (Testing)";
     
-    // Validasi input profil
-    if (!namaUsaha || !namaPemilik || !bidangUsaha || !alamatUsaha) {
-      alert("Silakan lengkapi Profil Usaha Anda terlebih dahulu!");
-      return;
+    const opsiTanggal: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+    const tanggalHariIni = new Date().toLocaleDateString("id-ID", opsiTanggal);
+
+    const newBusiness: BusinessData = {
+      id: Date.now().toString(),
+      namaUsaha: finalNamaUsaha,
+      tanggalDiajukan: tanggalHariIni,
+      status: "Dalam Proses", // Sesuai dengan spesifikasi type BusinessData di App.tsx
+    };
+
+    if (typeof setBusinessList === "function") {
+      setBusinessList((prevList) => [...prevList, newBusiness]);
+      console.log("Berhasil push data ke state global dashboard!");
+    } else {
+      console.error("Waduh! setBusinessList pecah / gak kebaca sebagai fungsi di komponen TambahUsaha.");
     }
     
-    // Validasi upload dokumen
-    if (!ktpName || !npwpName || !izinName) {
-      alert("Silakan unggah semua dokumen terlebih dahulu (KTP, NPWP, dan Surat Izin)!");
-      return;
-    }
-    
-    // Alirkan data nama usaha ke state global App.tsx sebelum pindah halaman
-    setGlobalBusiness({ namaUsaha, bidangUsaha, alamatUsaha });
-    
-    // Jika semua aman, lanjut ke form pertanyaan ESG
-    navigate("step1");
+    // Reset dan tutup modal
+    setStep(1);
+    setNamaUsaha("");
+    setPemilik("");
+    setBidangUsaha("");
+    setKota("");
+    onClose();
   };
 
   return (
-    <div className="min-h-screen bg-[#2d2d2d] flex flex-col justify-center py-12 px-6 lg:px-8 font-body antialiased text-white">
-      
-      {/* Container Card Tengah (Sedikit diperlebar jd max-w-lg agar form profil & upload muat rapi) */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-lg bg-[#3a3a3a] p-8 md:p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" onClick={onClose} />
+
+      <div className="relative w-full max-w-2xl bg-[#2d2d2d] border border-white/10 rounded-[24px] p-6 md:p-8 shadow-2xl text-[#f0ece8]">
         
-        {/* JUDUL TETAP RATA TENGAH */}
-        <div className="text-center mb-8">
-          <h2 className="font-head text-[1.65rem] font-black tracking-tight text-white leading-tight">
-            Registrasi & Unggah Dokumen
-          </h2>
-          <p className="mt-2 text-xs text-gray-400 font-medium tracking-wide">
-            Lengkapi profil bisnis dan berkas legalitas operasional UMKM Anda
-          </p>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-5">
+          <div>
+            <h2 className="font-head text-xl font-bold text-white">Registrasi & Unggah Dokumen</h2>
+            <p className="text-[0.8rem] text-[#b0a89e] mt-0.5">Daftarkan identitas usaha Anda untuk proses verifikasi.</p>
+          </div>
+          <div className="text-[0.75rem] font-bold bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-full text-[#b0a89e]">
+            Langkah <span className="text-[#e05c2a]">{step}</span> dari 3
+          </div>
         </div>
 
-        {/* Form Utama (Isinya Rata Kiri) */}
-        <form onSubmit={handleNextStep} className="space-y-6 text-left">
+        {/* PROGRESS BAR */}
+        <div className="w-full bg-white/[0.05] h-1 rounded-full mb-6 overflow-hidden">
+          <div
+            className="bg-[#e05c2a] h-full transition-all duration-300 ease-in-out"
+            style={{ width: `${(step / 3) * 100}%` }}
+          />
+        </div>
+
+        <div className="space-y-5">
           
-          {/* ================= BAGIAN 1: PROFIL USAHA ================= */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#e05c2a] border-b border-white/5 pb-2">
-              📂 I. Profil Usaha
-            </h3>
-            
-            {/* Nama Usaha */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Nama Usaha / Perusahaan</label>
-              <input
-                type="text"
-                required
-                value={namaUsaha}
-                onChange={(e) => setNamaUsaha(e.target.value)}
-                placeholder="Contoh: Toko Sinar Mentari"
-                className="w-full px-4 py-3 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-500 transition-all"
-              />
-            </div>
-
-            {/* Nama Pemilik */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Nama Pemilik (Owner)</label>
-              <input
-                type="text"
-                required
-                value={namaPemilik}
-                onChange={(e) => setNamaPemilik(e.target.value)}
-                placeholder="Nama sesuai KTP"
-                className="w-full px-4 py-3 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-500 transition-all"
-              />
-            </div>
-
-            {/* Grid 2 Kolom untuk Bidang Usaha & Alamat Singkat */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Bidang Usaha</label>
-                <select
-                  required
-                  value={bidangUsaha}
-                  onChange={(e) => setBidangUsaha(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white transition-all appearance-none cursor-pointer"
-                >
-                  <option value="" disabled className="text-gray-500">Pilih Bidang</option>
-                  <option value="Kuliner">Kuliner / Makanan</option>
-                  <option value="Fashion">Fashion / Pakaian</option>
-                  <option value="Agribisnis">Agribisnis / Pertanian</option>
-                  <option value="Jasa">Jasa / Servis</option>
-                  <option value="Manufaktur">Manufaktur / Kerajinan</option>
-                </select>
+          {/* STEP 1: NAMA USAHA & PEMILIK */}
+          {step === 1 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[0.75rem] font-bold text-[#b0a89e] tracking-wider uppercase">Nama Usaha / Perusahaan</label>
+                <input 
+                  type="text" 
+                  placeholder="Contoh: CV Sinar Abadi (Boleh kosong pas testing)"
+                  value={namaUsaha}
+                  onChange={(e) => setNamaUsaha(e.target.value)}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:border-[#e05c2a] focus:outline-none transition-all text-[0.9rem]"
+                />
               </div>
-              
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Kota / Lokasi Usaha</label>
-                <input
-                  type="text"
-                  required
-                  value={alamatUsaha}
-                  onChange={(e) => setAlamatUsaha(e.target.value)}
-                  placeholder="Contoh: Malang, Jawa Timur"
-                  className="w-full px-4 py-3 rounded-xl border border-white/10 text-xs focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-500 transition-all"
+              <div className="space-y-2">
+                <label className="text-[0.75rem] font-bold text-[#b0a89e] tracking-wider uppercase">Nama Pemilik / Direktur Utama</label>
+                <input 
+                  type="text" 
+                  placeholder="Nama lengkap sesuai KTP"
+                  value={pemilik}
+                  onChange={(e) => setPemilik(e.target.value)}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:border-[#e05c2a] focus:outline-none transition-all text-[0.9rem]"
                 />
               </div>
             </div>
-          </div>
+          )}
 
-          {/* ================= BAGIAN 2: UPLOAD DOKUMEN ================= */}
-          <div className="space-y-4 pt-2">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#e05c2a] border-b border-white/5 pb-2">
-              📜 II. Dokumen Legalitas
-            </h3>
+          {/* STEP 2: BIDANG USAHA & KOTA */}
+          {step === 2 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[0.75rem] font-bold text-[#b0a89e] tracking-wider uppercase">Bidang Usaha / Sektor</label>
+                <input 
+                  type="text" 
+                  placeholder="Contoh: Manufaktur, Kuliner"
+                  value={bidangUsaha}
+                  onChange={(e) => setBidangUsaha(e.target.value)}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:border-[#e05c2a] focus:outline-none transition-all text-[0.9rem]"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[0.75rem] font-bold text-[#b0a89e] tracking-wider uppercase">Kota / Kabupaten Operasional</label>
+                <input 
+                  type="text" 
+                  placeholder="Lokasi pabrik/kantor utama"
+                  value={kota}
+                  onChange={(e) => setKota(e.target.value)}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:border-[#e05c2a] focus:outline-none transition-all text-[0.9rem]"
+                />
+              </div>
+            </div>
+          )}
 
-            {/* 1. Slot Unggah KTP */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">KTP Pemilik</label>
-              <div 
-                onClick={() => setKtpName("KTP_Pemilik_Usaha.pdf")}
-                className="border border-dashed border-white/10 hover:border-[#e05c2a] rounded-xl p-3.5 cursor-pointer transition-all bg-[#4a4a4a] flex items-center gap-4 justify-start"
-              >
-                <span className="text-xl pl-1">🪪</span>
-                <div className="truncate">
-                  <span className="block text-xs font-bold text-gray-200">
-                    {ktpName ? ktpName : "Pilih / Ambil Berkas KTP"}
-                  </span>
-                  <span className="text-[10px] text-gray-400 font-medium block mt-0.5">PDF / JPG maks 5MB</span>
+          {/* STEP 3: UPLOAD BERKAS LEGALITAS */}
+          {step === 3 && (
+            <div className="space-y-3">
+              <label className="text-[0.75rem] font-bold text-[#b0a89e] tracking-wider uppercase block">Dokumen Validasi Legalitas (.pdf / .jpg)</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="border-2 border-dashed border-white/10 rounded-xl p-4 text-center hover:border-[#e05c2a]/40 bg-white/[0.01] transition-colors cursor-pointer">
+                  <span className="block text-xl mb-1">🪪</span>
+                  <span className="block text-[0.78rem] font-bold text-white">Upload KTP</span>
+                  <span className="block text-[0.65rem] text-[#b0a89e] mt-0.5">Maks 5MB</span>
+                </div>
+                <div className="border-2 border-dashed border-white/10 rounded-xl p-4 text-center hover:border-[#e05c2a]/40 bg-white/[0.01] transition-colors cursor-pointer">
+                  <span className="block text-xl mb-1">💳</span>
+                  <span className="block text-[0.78rem] font-bold text-white">NPWP Bisnis</span>
+                  <span className="block text-[0.65rem] text-[#b0a89e] mt-0.5">Maks 5MB</span>
+                </div>
+                <div className="border-2 border-dashed border-white/10 rounded-xl p-4 text-center hover:border-[#e05c2a]/40 bg-white/[0.01] transition-colors cursor-pointer">
+                  <span className="block text-xl mb-1">📄</span>
+                  <span className="block text-[0.78rem] font-bold text-white">NIB / SIUP</span>
+                  <span className="block text-[0.65rem] text-[#b0a89e] mt-0.5">Maks 10MB</span>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* 2. Slot Unggah NPWP */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">NPWP BADAN / PERORANGAN</label>
-              <div 
-                onClick={() => setNpwpName("NPWP_Usaha_Active.pdf")}
-                className="border border-dashed border-white/10 hover:border-[#e05c2a] rounded-xl p-3.5 cursor-pointer transition-all bg-[#4a4a4a] flex items-center gap-4 justify-start"
-              >
-                <span className="text-xl pl-1">💳</span>
-                <div className="truncate">
-                  <span className="block text-xs font-bold text-gray-200">
-                    {npwpName ? npwpName : "Pilih / Ambil Berkas NPWP"}
-                  </span>
-                  <span className="text-[10px] text-gray-400 font-medium block mt-0.5">PDF / PNG maks 5MB</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Slot Unggah Surat Izin Usaha */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">SURAT IZIN USAHA (NIB/SIUP)</label>
-              <div 
-                onClick={() => setIzinName("Surat_Izin_Berusaha_NIB.pdf")}
-                className="border border-dashed border-white/10 hover:border-[#e05c2a] rounded-xl p-3.5 cursor-pointer transition-all bg-[#4a4a4a] flex items-center gap-4 justify-start"
-              >
-                <span className="text-xl pl-1">📄</span>
-                <div className="truncate">
-                  <span className="block text-xs font-bold text-gray-200">
-                    {izinName ? izinName : "Pilih / Ambil Dokumen Surat Izin"}
-                  </span>
-                  <span className="text-[10px] text-gray-400 font-medium block mt-0.5">PDF / DOCX maks 10MB</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tombol Navigasi Bawah */}
-          <div className="space-y-4 pt-4 border-t border-white/5">
-            <button 
-              type="submit" 
-              className="w-full inline-flex items-center justify-center font-bold text-xs py-3.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-md tracking-wider uppercase"
-            >
-              Analisis & Mulai Evaluasi →
-            </button>
-            
-            <button 
+          {/* BUTTON CONTROLS */}
+          <div className="flex justify-between items-center pt-4 border-t border-white/[0.06] mt-6">
+            <button
               type="button"
-              onClick={() => navigate("dashboard")}
-              className="w-full text-center text-xs font-bold text-gray-400 hover:text-white transition-colors py-1 uppercase tracking-widest block"
+              onClick={step === 1 ? onClose : handleBack}
+              className="text-[0.85rem] font-bold text-[#b0a89e] hover:text-white transition-colors cursor-pointer"
             >
-              ← Batal & Kembali
+              {step === 1 ? "Batal" : "← Kembali"}
             </button>
-          </div>
-        </form>
 
+            {step < 3 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="inline-flex items-center justify-center font-bold text-[0.85rem] px-5 py-2.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer"
+              >
+                Lanjutkan →
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleDirectSubmit}
+                className="inline-flex items-center justify-center font-bold text-[0.85rem] px-5 py-2.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_4px_15px_rgba(224,92,42,0.3)] transition-all cursor-pointer"
+              >
+                Ajukan Dokumen Usaha
+              </button>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   );

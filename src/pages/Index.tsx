@@ -6,16 +6,43 @@ interface IndexProps {
 }
 
 export default function Index({ navigate }: IndexProps) {
-  // State login simulasi agar sesuai navigasi di template asli
+  // Di masa mendatang, nilai ini bisa diambil dari auth state / global context
   const [isLoggedIn] = useState<boolean>(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [activeNav, setActiveNav] = useState<string>("beranda");
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const faqData = [
+    {
+      question: "Apa saja syarat untuk mengajukan pendanaan hijau di F-Tech?",
+      answer: "Anda hanya perlu menyiapkan dokumen legalitas usaha dasar, laporan operasional atau keuangan sederhana, dan mengisi kuesioner indikator hijau yang telah kami sediakan di platform.",
+    },
+    {
+      question: "Berapa lama proses evaluasi skor ESG usaha saya?",
+      answer: "Proses evaluasi dilakukan secara instan! Algoritma AI kami akan langsung mengalkulasi skor komitmen hijau Anda sesaat setelah Anda menyelesaikan form pertanyaan.",
+    },
+    {
+      question: "Apakah data laporan keuangan dan operasional saya aman?",
+      answer: "Sangat aman. Semua data yang Anda unggah dienkripsi dengan standar keamanan industri tingkat tinggi dan tidak akan disebarluaskan tanpa persetujuan eksplisit dari Anda.",
+    },
+    {
+      question: "Bagaimana cara F-Tech menghubungkan bisnis saya dengan investor?",
+      answer: "Setelah skor ESG Anda diterbitkan, profil bisnis hijau Anda akan otomatis masuk ke dalam direktori portofolio eksklusif yang diakses oleh puluhan bank dan lembaga pendanaan internasional mitra kami.",
+    },
+  ];
 
   return (
-    <div id="page-home" className="block min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased overflow-y-auto">
+    <div id="page-home" className="block min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased overflow-y-auto pt-[76px]">
       
-      {/* ── 1. NAVBAR UTAMA STICKY ── */}
-      <nav className="sticky top-0 z-[100] flex items-center justify-between h-[76px] px-6 md:px-12 bg-[#2d2d2d]/95 backdrop-blur-[14px] border-b border-white/[0.08]">
-        {/* Kiri: Logo */}
-        <div className="flex items-center gap-3 font-head text-[1.2rem] font-bold text-[#f0ece8] cursor-pointer" onClick={() => navigate("home")}>
+      {/* NAVBAR */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between h-[76px] px-6 md:px-12 bg-[#2d2d2d]/95 backdrop-blur-[14px] border-b border-white/[0.08]">
+        <div className="flex items-center gap-3 font-head text-[1.2rem] font-bold text-[#f0ece8] cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
           <div className="w-[40px] h-[40px] bg-[#e05c2a] rounded-xl flex items-center justify-center font-extrabold text-[1.15rem] text-white shrink-0 shadow-md">
             <svg viewBox="0 0 24 24" className="w-[22px] h-[22px] fill-current text-white">
               <path d="M12 2L2 22h20L12 2zm0 4.3L18.8 19H5.2L12 6.3z" />
@@ -24,20 +51,48 @@ export default function Index({ navigate }: IndexProps) {
           <span className="tracking-wide">F-Tech <span className="text-[#e05c2a]">Solution</span></span>
         </div>
 
-        {/* Tengah: Tautan Menu Navigasi */}
         <div className="hidden md:flex items-center gap-10">
-          <span className="text-[#e05c2a] font-semibold text-[0.95rem] cursor-pointer relative after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]">
-            Solusi
+          <span 
+            className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
+              activeNav === "beranda" 
+                ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
+                : "text-[#b0a89e] hover:text-[#f0ece8]"
+            }`}
+            onClick={() => {
+              setActiveNav("beranda");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            Beranda
           </span>
-          <span className="text-[#b0a89e] hover:text-[#f0ece8] transition-colors font-medium text-[0.95rem] cursor-pointer" onClick={() => navigate("dashboard")}>
+          <span 
+            className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
+              activeNav === "fitur" 
+                ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
+                : "text-[#b0a89e] hover:text-[#f0ece8]"
+            }`}
+            onClick={() => {
+              setActiveNav("fitur");
+              scrollToSection("langkah-pengajuan");
+            }}
+          >
             Fitur
           </span>
-          <span className="text-[#b0a89e] hover:text-[#f0ece8] transition-colors font-medium text-[0.95rem] cursor-pointer" onClick={() => navigate("upload")}>
+          <span 
+            className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
+              activeNav === "faq" 
+                ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
+                : "text-[#b0a89e] hover:text-[#f0ece8]"
+            }`}
+            onClick={() => {
+              setActiveNav("faq");
+              scrollToSection("faq-section");
+            }}
+          >
             FAQ
           </span>
         </div>
 
-        {/* Kanan: Tombol Aksi Masuk/Daftar */}
         <div className="flex items-center gap-4">
           {!isLoggedIn ? (
             <>
@@ -63,11 +118,9 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </nav>
 
-      {/* ── 2. HERO SECTION (Layout 2 Kolom Yang Seimbang & Proporsional) ── */}
-      <section className="w-full bg-[radial-gradient(ellipse_90%_100%_at_65%_40%,#4a3e38_0%,#2d2d2d_65%)] py-24 md:py-32">
+      {/* HERO SECTION */}
+      <section className="w-full bg-[radial-gradient(ellipse_90%_100%_at_65%_40%,#4a3e38_0%,#2d2d2d_65%)] pt-12 pb-24 md:pt-16 md:pb-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-16">
-          
-          {/* Sisi Kiri: Judul & CTA (Teks Tidak Kaku/Gepeng) */}
           <div className="w-full lg:max-w-[550px] space-y-6 text-left">
             <div className="inline-flex items-center gap-2 bg-[#e05c2a]/15 border border-[#e05c2a]/30 rounded-full px-4 py-1.5 text-[0.8rem] font-bold text-[#e05c2a] tracking-wider uppercase">
               🌱 Smart Green Financial Platform
@@ -81,27 +134,47 @@ export default function Index({ navigate }: IndexProps) {
             <p className="text-[1rem] md:text-[1.05rem] text-[#b0a89e] leading-[1.75] font-normal max-w-lg">
               F-Tech Solution mempercepat pertumbuhan bisnis Anda melalui integrasi modal hijau, analisis cerdas, dan monitoring keberlanjutan lingkungan.
             </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <button onClick={() => navigate("step1")} className="inline-flex items-center justify-center font-bold text-[0.95rem] px-8 py-3.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_8px_24px_rgba(224,92,42,0.3)] hover:-translate-y-[1px] transition-all cursor-pointer">
-                Mulai
-              </button>
-              <button onClick={() => navigate("dashboard")} className="inline-flex items-center justify-center font-semibold text-[0.95rem] px-8 py-3.5 rounded-xl border-[1.5px] border-[#b0a89e] text-[#f0ece8] hover:border-[#f0ece8] hover:bg-white/[0.05] transition-all cursor-pointer">
-                Sudah Punya Akun
-              </button>
+            
+            {/* AREA CTA YANG SUDAH DIOPTIMALKAN */}
+            <div className="pt-2 space-y-3.5">
+              {!isLoggedIn ? (
+                <>
+                  <button 
+                    onClick={() => navigate("step1")} 
+                    className="inline-flex items-center justify-center font-bold text-[0.95rem] px-8 py-3.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_8px_24px_rgba(224,92,42,0.3)] hover:-translate-y-[1px] transition-all cursor-pointer"
+                  >
+                    Mulai Sekarang
+                  </button>
+                  <p className="text-[0.88rem] text-[#b0a89e] pl-1">
+                    Sudah punya akun?{" "}
+                    <span 
+                      onClick={() => navigate("login")} 
+                      className="text-[#e05c2a] font-semibold cursor-pointer hover:underline underline-offset-2 transition-all"
+                    >
+                      Masuk di sini
+                    </span>
+                  </p>
+                </>
+              ) : (
+                <button 
+                  onClick={() => navigate("dashboard")} 
+                  className="inline-flex items-center justify-center font-bold text-[0.95rem] px-8 py-3.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_8px_24px_rgba(224,92,42,0.3)] hover:-translate-y-[1px] transition-all cursor-pointer"
+                >
+                  Masuk ke Dashboard
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Sisi Kanan: Monitor Dashboard Grafis Mini */}
+          {/* MOCKUP KANAN */}
           <div className="w-full lg:max-w-[520px] flex justify-center lg:justify-end items-center">
             <div className="w-full max-w-[480px]">
               <div className="bg-[#1a1a1a] rounded-[16px] border-2 border-[#444] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.6)]">
-                {/* Window Header */}
                 <div className="bg-[#252525] h-8 flex items-center px-4 gap-2 border-b border-white/5">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
                 </div>
-                {/* Isi Dashboard Konten */}
                 <div className="p-5 grid grid-cols-[110px_1fr] gap-4 min-h-[240px]">
                   <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3 flex flex-col gap-2">
                     <div className="p-2 rounded bg-[#e05c2a] text-[0.65rem] text-white font-bold text-center">Dashboard</div>
@@ -137,16 +210,14 @@ export default function Index({ navigate }: IndexProps) {
                   </div>
                 </div>
               </div>
-              {/* Kaki Monitor Stand */}
               <div className="w-20 h-5 bg-[#333] mx-auto rounded-b shadow-inner" />
               <div className="w-[140px] h-2 bg-[#2a2a2a] mx-auto rounded" />
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* ── 3. STATS BAR SECTION (Garis Tinggi Teks Diperlebar & Sempurna) ── */}
+      {/* STATS SECTION */}
       <section className="w-full bg-white/[0.03] border-t border-b border-white/[0.08] py-10 md:py-12">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center space-y-1">
@@ -184,28 +255,22 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </section>
 
-      {/* ── 4. WHAT IS SECTION ── */}
+      {/* ESG SECTION */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          
-          {/* Visual Kiri: Bulatan ESG */}
           <div className="bg-white/[0.03] border border-white/10 rounded-[24px] p-8 md:p-10 relative overflow-hidden shadow-lg">
             <div className="absolute -top-16 -right-16 w-[220px] h-[220px] bg-[radial-gradient(circle,rgba(224,92,42,0.15)_0%,transparent_70%)] rounded-full" />
-            
             <div className="flex flex-wrap justify-center items-center gap-8 py-6 relative z-10">
-              {/* Lingkaran E */}
               <div className="w-[100px] h-[100px] rounded-full flex flex-col items-center justify-center font-head font-extrabold relative border-t-4 border-[#4caf50] bg-[#4caf50]/[0.06] shadow-md">
                 <span className="text-[1.6rem] text-[#4caf50] leading-none">E</span>
                 <span className="text-[0.6rem] text-[#b0a89e] font-body font-normal uppercase tracking-wider mt-1">Env</span>
                 <span className="text-[0.85rem] font-bold text-white mt-0.5">88%</span>
               </div>
-              {/* Lingkaran S */}
               <div className="w-[100px] h-[100px] rounded-full flex flex-col items-center justify-center font-head font-extrabold relative border-t-4 border-[#2196f3] bg-[#2196f3]/[0.06] shadow-md">
                 <span className="text-[1.6rem] text-[#2196f3] leading-none">S</span>
                 <span className="text-[0.6rem] text-[#b0a89e] font-body font-normal uppercase tracking-wider mt-1">Soc</span>
                 <span className="text-[0.85rem] font-bold text-white mt-0.5">76%</span>
               </div>
-              {/* Lingkaran G */}
               <div className="w-[100px] h-[100px] rounded-full flex flex-col items-center justify-center font-head font-extrabold relative border-t-4 border-[#e05c2a] bg-[#e05c2a]/[0.06] shadow-md">
                 <span className="text-[1.6rem] text-[#e05c2a] leading-none">G</span>
                 <span className="text-[0.6rem] text-[#b0a89e] font-body font-normal uppercase tracking-wider mt-1">Gov</span>
@@ -215,7 +280,6 @@ export default function Index({ navigate }: IndexProps) {
             <p className="text-center text-[0.85rem] text-[#b0a89e] font-medium tracking-wide mt-4">Skor rata-rata performa pilar ESG UMKM terdaftar</p>
           </div>
 
-          {/* Teks Kanan */}
           <div className="space-y-4">
             <div className="text-[0.8rem] font-bold tracking-[0.15em] text-[#e05c2a] uppercase">Apa Itu Fin Sustain?</div>
             <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white leading-[1.25]">Sistem Penilaian Finansial & Standar Dampak Hijau</h2>
@@ -243,11 +307,10 @@ export default function Index({ navigate }: IndexProps) {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* ── 5. WHY IMPORTANT SECTION ── */}
+      {/* WHY US SECTION */}
       <section className="w-full bg-white/[0.01] border-t border-white/[0.06] py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
@@ -276,8 +339,8 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </section>
 
-      {/* ── 6. HOW IT WORKS SECTION ── */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
+      {/* STEPS SECTION */}
+      <section id="langkah-pengajuan" className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 scroll-mt-24">
         <div className="text-center mb-20 space-y-3">
           <div className="text-[0.8rem] font-bold tracking-[0.15em] text-[#e05c2a] uppercase">Langkah Pengajuan</div>
           <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white">Bagaimana Cara Kerjanya?</h2>
@@ -309,7 +372,7 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </section>
 
-      {/* ── 7. USE CASES SECTION ── */}
+      {/* CASE STUDY SECTION */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
         <div className="text-center mb-16 space-y-3">
           <div className="text-[0.8rem] font-bold tracking-[0.15em] text-[#e05c2a] uppercase">Studi Kasus</div>
@@ -345,7 +408,7 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </section>
 
-      {/* ── 8. SDGs COMMITMENT CARDS SECTION ── */}
+      {/* SDGs SECTION */}
       <section className="w-full bg-white/[0.01] border-t border-white/[0.06] py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="text-center mb-16 space-y-3">
@@ -353,21 +416,18 @@ export default function Index({ navigate }: IndexProps) {
             <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white">Mendukung Penuh Target PBB (SDGs)</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* SDG 7 */}
             <div className="bg-[#4caf50]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#4caf50] shadow-sm">
               <div className="font-head text-[2.8rem] font-black opacity-[0.08] absolute right-6 top-4 leading-none text-white">07</div>
               <span className="inline-block bg-[#4caf50]/15 text-[#81c784] px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-widest mb-4 uppercase">SDG 7</span>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Energi Bersih & Terjangkau</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Meningkatkan adopsi peralihan pembangkit listrik tenaga surya dan biomassa alternatif di sektor usaha daerah terpencil.</p>
             </div>
-            {/* SDG 12 */}
             <div className="bg-[#ff9800]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#ff9800] shadow-sm">
               <div className="font-head text-[2.8rem] font-black opacity-[0.08] absolute right-6 top-4 leading-none text-white">12</div>
               <span className="inline-block bg-[#ff9800]/15 text-[#ffb74d] px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-widest mb-4 uppercase">SDG 12</span>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Konsumsi & Produksi Bertanggung Jawab</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Menekan pemborosan sisa bahan baku manufaktur lewat skema manajemen rantai sirkular ekonomi sisa produksi.</p>
             </div>
-            {/* SDG 13 */}
             <div className="bg-[#2196f3]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#2196f3] shadow-sm">
               <div className="font-head text-[2.8rem] font-black opacity-[0.08] absolute right-6 top-4 leading-none text-white">13</div>
               <span className="inline-block bg-[#2196f3]/15 text-[#64b5f6] px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-widest mb-4 uppercase">SDG 13</span>
@@ -378,33 +438,45 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </section>
 
-      {/* ── 9. CTA BANNER ── */}
-      <section className="w-full bg-[radial-gradient(ellipse_70%_80%_at_50%_0%,#4a3e38_0%,#2d2d2d_70%)] border-t border-white/[0.06] py-28 text-center">
-        <div className="max-w-[560px] mx-auto px-6 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-[#e05c2a]/15 border border-[#e05c2a]/30 rounded-full px-4 py-1.5 text-[0.8rem] font-bold text-[#e05c2a] tracking-wider uppercase">
-            Mulai Sekarang
+      {/* FAQ SECTION */}
+      <section id="faq-section" className="w-full bg-white/[0.02] border-t border-white/[0.06] py-24 md:py-32 scroll-mt-24">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16 space-y-3">
+            <div className="text-[0.8rem] font-bold tracking-[0.15em] text-[#e05c2a] uppercase">Pertanyaan Umum</div>
+            <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white">Frequently Asked Questions</h2>
+            <p className="text-[0.95rem] text-[#b0a89e]">Punya pertanyaan seputar platform? Temukan jawabannya di bawah ini.</p>
           </div>
-          <h2 className="font-head text-3xl md:text-[2.6rem] font-extrabold text-white leading-tight">Siap Mengembangkan Bisnis Hijau Anda?</h2>
-          <p className="text-[1rem] text-[#b0a89e] leading-[1.75] max-w-lg mx-auto pb-4">Dapatkan verifikasi kelayakan instan dan hubungkan proyek keberlanjutan Anda ke jaringan pendanaan internasional hari ini.</p>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <button onClick={() => navigate("step1")} className="inline-flex items-center justify-center font-bold text-[0.95rem] px-9 py-3.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_8px_24px_rgba(224,92,42,0.35)] hover:-translate-y-[1px] transition-all cursor-pointer">
-              Ajukan Kredit Usaha
-            </button>
-            <button onClick={() => navigate("register")} className="inline-flex items-center justify-center font-bold text-[0.95rem] px-9 py-3.5 rounded-xl border-[1.5px] border-[#b0a89e] text-[#f0ece8] hover:border-[#f0ece8] hover:bg-white/[0.05] transition-all cursor-pointer">
-              Daftar Akun Baru
-            </button>
+
+          <div className="space-y-4">
+            {faqData.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div 
+                  key={index} 
+                  className="bg-white/[0.03] border border-white/[0.08] rounded-[16px] overflow-hidden transition-all duration-300"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between p-6 text-left font-semibold text-[1.05rem] text-white hover:bg-white/[0.02] transition-colors gap-4"
+                  >
+                    <span>{faq.question}</span>
+                    <span className={`text-[#e05c2a] text-xl font-bold transform transition-transform duration-300 shrink-0 ${isOpen ? "rotate-45" : "rotate-0"}`}>
+                      ＋
+                    </span>
+                  </button>
+                  <div 
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-[200px] border-t border-white/[0.05]" : "max-h-0"}`}
+                  >
+                    <div className="p-6 text-[0.95rem] text-[#b0a89e] leading-[1.65]">
+                      {faq.answer}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
-
-      {/* ── 10. FOOTER ── */}
-      <footer className="w-full bg-black/20 border-t border-white/[0.06] py-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-[0.85rem] text-[#b0a89e] font-medium">&copy; {new Date().getFullYear()} F-Tech Solution – Fin Sustain. Hak Cipta Dilindungi.</div>
-          <div className="text-[0.8rem] text-white/30 tracking-wider uppercase font-semibold">Platform Akreditasi Keberlanjutan Mandiri</div>
-        </div>
-      </footer>
-
     </div>
   );
 }

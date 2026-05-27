@@ -9,7 +9,6 @@ import AnalisisESG from "./pages/AnalisisESG";
 import PengajuanKreditHijau from "./pages/PengajuanKreditHijau";
 import "./index.css";
 
-// Definisi tipe string halaman resmi aplikasi (ditambahkan 'analisis')
 export type PageName =
   | "home"
   | "dashboard"
@@ -23,37 +22,60 @@ export type PageName =
   | "analisis"
   | "pengajuan-kredit";
 
+export interface BusinessData {
+  id: string;
+  namaUsaha: string;
+  tanggalDiajukan: string;
+  status: "Dalam Proses" | "Diverifikasi";
+}
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageName>("home");
 
-  // 3. State global untuk menyimpan profil usaha dari halaman TambahUsaha
-  const [businessData, setBusinessData] = useState({
-    namaUsaha: "Toko Sinar Mentari", // Nama default sesuai use case kelompok lu
-    bidangUsaha: "",
-    alamatUsaha: ""
-  });
+  const [businessList, setBusinessList] = useState<BusinessData[]>([
+    {
+      id: "1",
+      namaUsaha: "PT Tekno Hijau Sejahtera",
+      tanggalDiajukan: "25 Mei 2026",
+      status: "Diverifikasi",
+    },
+    {
+      id: "2",
+      namaUsaha: "CV Sinar Mandiri",
+      tanggalDiajukan: "21 Mei 2026",
+      status: "Dalam Proses",
+    },
+  ]);
+
+  const [activeBusinessName, setActiveBusinessName] = useState<string>("");
 
   const navigate = (page: PageName) => {
     setCurrentPage(page);
-    window.scrollTo(0, 0); // Layar otomatis kembali ke atas saat pindah halaman
+    window.scrollTo(0, 0);
   };
 
-  // Router pengkondisian komponen aktif
   switch (currentPage) {
     case "home":
       return <Index navigate={navigate} />;
     case "dashboard":
-      return <Dashboard navigate={navigate} />;
+      return (
+        <Dashboard 
+          navigate={navigate} 
+          businessList={businessList}
+          setBusinessList={setBusinessList} // <--- DI SINI KUNCI PERBAIKANNYA!
+          setActiveBusinessName={setActiveBusinessName}
+        />
+      );
     case "login":
       return <Login navigate={navigate} />;
     case "register":
       return <Register navigate={navigate} />;
     case "upload":
-      // 4. Oper fungsi setGlobalBusiness ke komponen TambahUsaha
       return (
         <TambahUsaha 
-          navigate={navigate} 
-          setGlobalBusiness={(data) => setBusinessData(data)} 
+          isOpen={true}
+          onClose={() => navigate("dashboard")}
+          setBusinessList={setBusinessList} 
         />
       );
     case "step1":
@@ -68,17 +90,16 @@ export default function App() {
       return (
         <AnalisisESG 
           navigate={navigate} 
-          namaUsaha={businessData.namaUsaha} 
+          namaUsaha={activeBusinessName} 
         />
       );
     case "pengajuan-kredit":
       return (
         <PengajuanKreditHijau 
           navigate={navigate} 
-          namaUsaha={businessData.namaUsaha}
+          namaUsaha={activeBusinessName}
         />
       );
-
     default:
       return <Index navigate={navigate} />;
   }

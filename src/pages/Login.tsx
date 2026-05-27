@@ -17,13 +17,11 @@ export default function Login({ navigate }: LoginProps) {
   };
 
   return (
-    // Background luar abu-abu gelap arang bawaan asli landing page
     <div className="min-h-screen bg-[#2d2d2d] flex flex-col justify-center py-12 px-6 lg:px-8 font-body antialiased text-white">
       
-      {/* Container Card Login Semi-Gelap Presisi Sesuai Gambar Mockup */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5">
         
-        {/* Logo Kotak Oranye Atas */}
+        {/* Logo Kotak Oranye */}
         <div className="flex justify-center mb-5">
           <div className="w-12 h-12 bg-[#e05c2a] rounded-xl flex items-center justify-center shadow-md">
             <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
@@ -48,7 +46,7 @@ export default function Login({ navigate }: LoginProps) {
         {/* Form Input */}
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Input Username/Email dengan Ikon User */}
+          {/* Input Username/Email */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -60,12 +58,12 @@ export default function Login({ navigate }: LoginProps) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Username"
+              placeholder="Username / Email"
               className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-400 transition-all"
             />
           </div>
 
-          {/* Input Password dengan Ikon Gembok */}
+          {/* Input Password */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -82,7 +80,7 @@ export default function Login({ navigate }: LoginProps) {
             />
           </div>
 
-          {/* Opsi Tambahan: Ingat Saya & Lupa Password */}
+          {/* Opsi Tambahan */}
           <div className="flex items-center justify-between text-xs pt-1 pb-2">
             <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
               <input
@@ -98,7 +96,7 @@ export default function Login({ navigate }: LoginProps) {
             </span>
           </div>
 
-          {/* Tombol Login Oranye Kebanggaan Sesuai Gambar */}
+          {/* Tombol Login */}
           <button
             type="submit"
             className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-md tracking-wide mt-2"
@@ -107,8 +105,20 @@ export default function Login({ navigate }: LoginProps) {
           </button>
         </form>
 
+        {/* ✨ NOTE DARI LU: Navigasi ke Halaman Register */}
+        <p className="mt-5 text-center text-xs text-gray-400">
+          Belum punya akun?{" "}
+          <button 
+            type="button"
+            onClick={() => navigate("register")}
+            className="text-[#e05c2a] font-bold hover:underline bg-transparent cursor-pointer"
+          >
+            Daftar akun
+          </button>
+        </p>
+
         {/* Tombol Kembali ke Beranda */}
-        <div className="mt-8 text-center border-t border-white/5 pt-5">
+        <div className="mt-6 text-center border-t border-white/5 pt-5">
           <button
             type="button"
             onClick={() => navigate("home")}
