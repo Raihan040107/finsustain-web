@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { PageName } from "../App";
+import Toast, { type ToastType } from "../components/ui/Toast";
 
 interface LoginProps {
   navigate: (page: PageName) => void;
@@ -10,25 +11,47 @@ export default function Login({ navigate }: LoginProps) {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
+  // ✨ STATE UNTUK TOAST NOTIFICATION
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Login Berhasil!");
-    navigate("dashboard");
+    
+    setToast({
+      show: true,
+      message: "Login Berhasil! Mengalihkan ke Dashboard...",
+      type: "success"
+    });
+
+    // Kasih jeda 1.5 detik biar toast kebaca
+    setTimeout(() => {
+      navigate("dashboard");
+    }, 1500);
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white h-screen">
+    <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white h-screen relative">
       
+      {/* ✨ RENDER TOAST DI SINI */}
+      {toast.show && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(prev => ({ ...prev, show: false }))} 
+        />
+      )}
+
       {/* SISI KIRI: GAMBAR & BRANDING (Hanya muncul di Desktop) */}
       <div 
         className="hidden lg:flex flex-col justify-between p-12 relative bg-cover bg-center border-r border-white/5"
-        /* ✨ GAMBAR BARU: Kombinasi data teknologi masa depan dan energi hijau yang clean */
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80')` }}
       >
-        {/* Overlay Gelap Estetik */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-[#2d2d2d]/40 z-0" />
 
-        {/* Brand Header */}
         <div className="relative z-10 flex items-center gap-2">
           <div className="w-8 h-8 bg-[#e05c2a] rounded-lg flex items-center justify-center shadow-md">
             <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -38,7 +61,6 @@ export default function Login({ navigate }: LoginProps) {
           <span className="font-head text-sm font-bold tracking-wider uppercase text-white">Fin Sustain</span>
         </div>
 
-        {/* Slogan & Deskripsi Tema FinTech Berkelanjutan */}
         <div className="relative z-10 max-w-md mb-8">
           <h1 className="font-head text-3xl md:text-4xl font-black text-white italic leading-tight mb-4">
             "Sinergi Teknologi, Wujudkan Solusi Berkelanjutan."
@@ -53,7 +75,6 @@ export default function Login({ navigate }: LoginProps) {
       <div className="flex items-center justify-center py-12 px-6 lg:px-8 bg-[#2d2d2d]">
         <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5">
           
-          {/* Logo Kotak Oranye */}
           <div className="flex justify-center mb-5">
             <div className="w-12 h-12 bg-[#e05c2a] rounded-xl flex items-center justify-center shadow-md">
               <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
@@ -62,7 +83,6 @@ export default function Login({ navigate }: LoginProps) {
             </div>
           </div>
 
-          {/* Judul Teks */}
           <div className="text-center mb-8">
             <h2 className="text-lg font-bold tracking-tight text-white">
               Selamat Datang di Fin Sustain
@@ -75,7 +95,6 @@ export default function Login({ navigate }: LoginProps) {
             </h3>
           </div>
 
-          {/* Form Input */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -132,7 +151,6 @@ export default function Login({ navigate }: LoginProps) {
             </button>
           </form>
 
-          {/* Link ke Register */}
           <p className="mt-5 text-center text-xs text-gray-400">
             Belum mendaftarkan usaha Anda?{" "}
             <button 
@@ -144,7 +162,6 @@ export default function Login({ navigate }: LoginProps) {
             </button>
           </p>
 
-          {/* Tombol Kembali ke Beranda */}
           <div className="mt-6 text-center border-t border-white/5 pt-5 overflow-hidden">
             <button
               type="button"

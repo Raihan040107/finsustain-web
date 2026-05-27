@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { PageName } from "../App";
+import Toast, { type ToastType } from "../components/ui/Toast";
 
 interface FormPertanyaanProps {
   navigate: (page: PageName) => void;
@@ -9,13 +10,15 @@ interface FormPertanyaanProps {
 export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) {
   // State posisi aspek internal kuesioner (1 = Environment, 2 = Social, 3 = Governance)
   const [currentStep, setCurrentStep] = useState(1);
+  
+  // State untuk menampilkan Toast
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
   // Efek biar pas awal buka halaman, step-nya langsung sinkron dengan router App.tsx
   useEffect(() => {
     if (step >= 1 && step <= 3) {
       setCurrentStep(step);
     } else if (step === 4) {
-      // Jika dari router dikirim step 4, kita set langsung ke halaman final (Governance)
       setCurrentStep(3);
     }
   }, [step]);
@@ -39,28 +42,14 @@ export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) 
     q12_rencana: ""
   });
 
-  // Handler untuk memperbarui jawaban radio button
   const handleRadioChange = (key: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Navigasi antar halaman kuesioner
+  // Navigasi antar halaman kuesioner - SEKARANG BEBAS TANPA VALIDASI
   const handleNext = () => {
-    if (currentStep === 1) {
-      // Validasi singkat halaman 1 sebelum lanjut
-      if (!answers.q1_listrik || !answers.q2_energi || !answers.q3_limbah || !answers.q4_bahanBaku) {
-        alert("Silakan isi semua pertanyaan di aspek Lingkungan terlebih dahulu!");
-        return;
-      }
-      setCurrentStep(2);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (currentStep === 2) {
-      // Validasi singkat halaman 2 sebelum lanjut
-      if (!answers.q5_karyawan || !answers.q6_lokal || !answers.q7_jaminan || !answers.q8_upah) {
-        alert("Silakan isi semua pertanyaan di aspek Sosial terlebih dahulu!");
-        return;
-      }
-      setCurrentStep(3);
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -74,27 +63,67 @@ export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) 
     }
   };
 
-  // Handler submit akhir kuesioner
+  // Handler submit akhir kuesioner - VALIDASI GLOBAL DI SINI
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validasi halaman ke-3 sebelum submit
-    if (!answers.q9_izin || !answers.q10_pembukuan || !answers.q11_rekening || !answers.q12_rencana) {
-      alert("Silakan lengkapi semua pertanyaan di aspek Tata Kelola terlebih dahulu!");
+    
+    // Cek kelengkapan masing-masing step
+    const isEnvComplete = answers.q1_listrik && answers.q2_energi && answers.q3_limbah && answers.q4_bahanBaku;
+    const isSocComplete = answers.q5_karyawan && answers.q6_lokal && answers.q7_jaminan && answers.q8_upah;
+    const isGovComplete = answers.q9_izin && answers.q10_pembukuan && answers.q11_rekening && answers.q12_rencana;
+
+    // Logika lempar user ke step yang belum lengkap
+    if (!isEnvComplete || !isSocComplete || !isGovComplete) {
+      let targetStep = 1;
+      let aspectName = "";
+
+      if (!isEnvComplete) {
+        targetStep = 1;
+        aspectName = "Lingkungan";
+      } else if (!isSocComplete) {
+        targetStep = 2;
+        aspectName = "Sosial";
+      } else if (!isGovComplete) {
+        targetStep = 3;
+        aspectName = "Tata Kelola";
+      }
+
+      setCurrentStep(targetStep);
+      setToast({
+        message: `Silakan lengkapi pertanyaan di aspek ${aspectName} terlebih dahulu!`,
+        type: "warning"
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     
-    alert("Evaluasi ESG Berhasil Disubmit! Menghitung Skor Anda...");
-    // Alur: Pindah ke page analisis untuk menampilkan rapor hasil akhir skor ESG
-    navigate("analisis");
+    // Kalau lolos semua, munculin Toast Success dan delay dikit sebelum pindah halaman
+    setToast({
+      message: "Evaluasi ESG Berhasil Disubmit! Menghitung Skor Anda...",
+      type: "success"
+    });
+    
+    setTimeout(() => {
+      navigate("analisis");
+    }, 1500);
   };
 
   return (
-    <div className="min-h-screen bg-[#2d2d2d] flex flex-col justify-center py-12 px-6 lg:px-8 font-body antialiased text-white">
+    <div className="min-h-screen bg-[#2d2d2d] flex flex-col justify-center py-12 px-6 lg:px-8 font-body antialiased text-white relative">
       
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       {/* Container Card Utama */}
       <div className="sm:mx-auto sm:w-full sm:max-w-xl bg-[#3a3a3a] p-8 md:p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5">
         
-        {/* Indikator Progress Langkah (Rata Tengah) */}
+        {/* Indikator Progress Langkah */}
         <div className="text-center mb-8">
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#e05c2a] bg-[#e05c2a]/10 px-3 py-1.5 rounded-full border border-[#e05c2a]/20">
             Langkah {currentStep} dari 3 Aspek
@@ -111,7 +140,7 @@ export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) 
           </p>
         </div>
 
-        {/* Form Pertanyaan Konten (Isinya Rata Kiri) */}
+        {/* Form Pertanyaan Konten */}
         <form onSubmit={handleSubmit} className="space-y-8 text-left">
           
           {/* STEP 1: ENVIRONMENTAL */}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { PageName } from "../App";
+import Toast, { type ToastType } from "../components/ui/Toast";
 
 interface RegisterProps {
   navigate: (page: PageName) => void;
@@ -9,16 +10,42 @@ export default function Register({ navigate }: RegisterProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  
+  // ✨ STATE UNTUK TOAST NOTIFICATION
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType }>({
+    show: false,
+    message: "",
+    type: "success",
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Registrasi Berhasil! Selamat datang, ${username}.`);
-    navigate("dashboard");
+    
+    // Munculin Toast
+    setToast({
+      show: true,
+      message: `Registrasi Berhasil! Selamat datang, ${username}.`,
+      type: "success"
+    });
+
+    // Kasih jeda 1.5 detik biar user bisa baca Toast-nya sebelum dilempar ke Dashboard
+    setTimeout(() => {
+      navigate("dashboard");
+    }, 1500);
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white h-screen">
+    <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white h-screen relative">
       
+      {/* ✨ RENDER TOAST DI SINI */}
+      {toast.show && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(prev => ({ ...prev, show: false }))} 
+        />
+      )}
+
       {/* SISI KIRI: FORM CARD UTAMA */}
       <div className="flex items-center justify-center py-12 px-6 lg:px-8 bg-[#2d2d2d] order-last lg:order-first">
         <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5">
@@ -39,7 +66,7 @@ export default function Register({ navigate }: RegisterProps) {
               Daftar untuk mulai mengelola portofolio keberlanjutan Anda
             </p>
             <h3 className="text-xl font-bold text-white mt-6 tracking-wide">
-              Registrasi Akun
+              Registrasi
             </h3>
           </div>
 
