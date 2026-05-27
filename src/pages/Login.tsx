@@ -17,15 +17,33 @@ export default function Login({ navigate }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white">
-        <div 
-          className="hidden lg:flex flex-col justify-between p-12 relative bg-cover bg-center border-r border-white/5"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1582236371728-f68e0a7f1c1f?auto=format&fit=crop&w=600&q=60')` }}
-        >
-        {/* Overlay Gelap biar Estetik dan Teks Terbaca */}
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white overflow-hidden">
+      
+      {/* ✨ INJEKSI ANIMASI PREMIUM (Zero Config) */}
+      <style>{`
+        @keyframes premiumSlideRight {
+          from { transform: translateX(80px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes premiumFade {
+          from { opacity: 0; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-slide-right {
+          animation: premiumSlideRight 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-fade-in {
+          animation: premiumFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
+
+      {/* SISI KIRI: GAMBAR & BRANDING */}
+      <div 
+        className="hidden lg:flex flex-col justify-between p-12 relative bg-cover bg-center border-r border-white/5 animate-fade-in"
+        style={{ backgroundImage: `url('https://images.unsplash.com/photo-1582236371728-f68e0a7f1c1f?auto=format&fit=crop&w=600&q=60')` }}
+      >
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30 z-0" />
 
-        {/* Brand Header */}
         <div className="relative z-10 flex items-center gap-2">
           <div className="w-8 h-8 bg-[#e05c2a] rounded-lg flex items-center justify-center shadow-md">
             <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -35,8 +53,7 @@ export default function Login({ navigate }: LoginProps) {
           <span className="font-head text-sm font-bold tracking-wider uppercase text-white">Fin Sustain</span>
         </div>
 
-        {/* Slogan */}
-        <div className="relative z-10 max-w-md mb-8 animate-fadeIn">
+        <div className="relative z-10 max-w-md mb-8">
           <h1 className="font-head text-3xl md:text-4xl font-black text-white italic leading-tight mb-4">
             "Wariskan Alam, Tumbuhkan Kekayaan."
           </h1>
@@ -46,11 +63,10 @@ export default function Login({ navigate }: LoginProps) {
         </div>
       </div>
 
-      {/* SISI KANAN: FORM CARD UTAMA */}
+      {/* SISI KANAN: FORM CARD (Menggunakan efek slide masuk dari kanan) */}
       <div className="flex items-center justify-center py-12 px-6 lg:px-8 bg-[#2d2d2d]">
-        <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5 animate-fadeIn">
+        <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5 data-side animate-slide-right">
           
-          {/* Logo Kotak Oranye */}
           <div className="flex justify-center mb-5">
             <div className="w-12 h-12 bg-[#e05c2a] rounded-xl flex items-center justify-center shadow-md">
               <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
@@ -59,7 +75,6 @@ export default function Login({ navigate }: LoginProps) {
             </div>
           </div>
 
-          {/* Judul Teks */}
           <div className="text-center mb-8">
             <h2 className="text-lg font-bold tracking-tight text-white">
               Welcome to Fin Sustain
@@ -72,10 +87,7 @@ export default function Login({ navigate }: LoginProps) {
             </h3>
           </div>
 
-          {/* Form Input */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* Input Username/Email */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -92,7 +104,6 @@ export default function Login({ navigate }: LoginProps) {
               />
             </div>
 
-            {/* Input Password */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -109,7 +120,6 @@ export default function Login({ navigate }: LoginProps) {
               />
             </div>
 
-            {/* Opsi Tambahan */}
             <div className="flex items-center justify-between text-xs pt-1 pb-2">
               <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
                 <input
@@ -125,16 +135,14 @@ export default function Login({ navigate }: LoginProps) {
               </span>
             </div>
 
-            {/* Tombol Login */}
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_0_15px_rgba(224,92,42,0.3)] transition-all cursor-pointer shadow-md tracking-wide mt-2"
+              className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-md tracking-wide mt-2"
             >
               Login
             </button>
           </form>
 
-          {/* Navigasi ke Halaman Register */}
           <p className="mt-5 text-center text-xs text-gray-400">
             Belum punya akun?{" "}
             <button 
@@ -146,14 +154,13 @@ export default function Login({ navigate }: LoginProps) {
             </button>
           </p>
 
-          {/* Tombol Kembali ke Beranda */}
-          <div className="mt-6 text-center border-t border-white/5 pt-5 overflow-hidden">
+          <div className="mt-6 text-center border-t border-white/5 pt-5">
             <button
               type="button"
               onClick={() => navigate("home")}
-              className="text-xs font-bold text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1.5 uppercase tracking-wider group"
+              className="text-xs font-bold text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1.5 uppercase tracking-wider"
             >
-              <span className="group-hover:animate-slideInLeft">←</span> Kembali ke Beranda
+              ← Kembali ke Beranda
             </button>
           </div>
 

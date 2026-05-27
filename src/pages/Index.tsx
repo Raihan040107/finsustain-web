@@ -122,9 +122,6 @@ export default function Index({ navigate }: IndexProps) {
       <section className="w-full bg-[radial-gradient(ellipse_90%_100%_at_65%_40%,#4a3e38_0%,#2d2d2d_65%)] pt-12 pb-24 md:pt-16 md:pb-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-16">
           <div className="w-full lg:max-w-[550px] space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 bg-[#e05c2a]/15 border border-[#e05c2a]/30 rounded-full px-4 py-1.5 text-[0.8rem] font-bold text-[#e05c2a] tracking-wider uppercase">
-              🌱 Smart Green Financial Platform
-            </div>
             <h1 className="font-head text-4xl md:text-[3.4rem] font-extrabold text-white leading-[1.2] tracking-tight">
               Solusi Finansial untuk <br className="hidden md:inline" />
               <span className="bg-gradient-to-r from-[#e05c2a] to-[#f06b35] bg-clip-text text-transparent">

@@ -17,13 +17,30 @@ export default function Register({ navigate }: RegisterProps) {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white overflow-hidden">
       
-      {/* SISI KIRI: FORM CARD UTAMA (Urutan ditukar ke depan di desktop via lg:order-first) */}
+      {/* ✨ INJEKSI ANIMASI PREMIUM (Zero Config) */}
+      <style>{`
+        @keyframes premiumSlideLeft {
+          from { transform: translateX(-80px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes premiumFade {
+          from { opacity: 0; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-slide-left {
+          animation: premiumSlideLeft 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-fade-in {
+          animation: premiumFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
+
+      {/* SISI KIRI: FORM CARD (Menggunakan efek slide masuk dari kiri) */}
       <div className="flex items-center justify-center py-12 px-6 lg:px-8 bg-[#2d2d2d] order-last lg:order-first">
-        <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5 animate-fadeIn">
+        <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5 animate-slide-left">
           
-          {/* Logo Kotak Oranye */}
           <div className="flex justify-center mb-5">
             <div className="w-12 h-12 bg-[#e05c2a] rounded-xl flex items-center justify-center shadow-md">
               <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
@@ -32,7 +49,6 @@ export default function Register({ navigate }: RegisterProps) {
             </div>
           </div>
 
-          {/* Judul Teks */}
           <div className="text-center mb-8">
             <h2 className="text-lg font-bold tracking-tight text-white">
               Welcome to Fin Sustain
@@ -45,10 +61,7 @@ export default function Register({ navigate }: RegisterProps) {
             </h3>
           </div>
 
-          {/* Form Input */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* Input Username */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
@@ -65,7 +78,6 @@ export default function Register({ navigate }: RegisterProps) {
               />
             </div>
 
-            {/* Input Password */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
@@ -82,7 +94,6 @@ export default function Register({ navigate }: RegisterProps) {
               />
             </div>
 
-            {/* Opsi Tambahan */}
             <div className="flex items-center justify-between text-xs pt-1 pb-2">
               <label className="flex items-center gap-2 text-gray-300 cursor-pointer select-none">
                 <input
@@ -98,7 +109,6 @@ export default function Register({ navigate }: RegisterProps) {
               </span>
             </div>
 
-            {/* Tombol Daftar */}
             <button
               type="submit"
               className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-md tracking-wide mt-2"
@@ -107,7 +117,6 @@ export default function Register({ navigate }: RegisterProps) {
             </button>
           </form>
 
-          {/* Link ke Login */}
           <p className="mt-6 text-center text-xs text-gray-400">
             Sudah punya akun?{" "}
             <button 
@@ -119,29 +128,26 @@ export default function Register({ navigate }: RegisterProps) {
             </button>
           </p>
 
-          {/* Tombol Kembali ke Beranda */}
-          <div className="mt-6 text-center border-t border-white/5 pt-5 overflow-hidden">
+          <div className="mt-6 text-center border-t border-white/5 pt-5">
             <button
               type="button"
               onClick={() => navigate("home")}
-              className="text-xs font-bold text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1.5 uppercase tracking-wider group"
+              className="text-xs font-bold text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1.5 uppercase tracking-wider"
             >
-              <span className="group-hover:animate-slideInLeft">←</span> Kembali ke Beranda
+              ← Kembali ke Beranda
             </button>
           </div>
 
         </div>
       </div>
 
-      {/* SISI KANAN: GAMBAR & BRANDING (Ditukar ke posisi kanan di desktop lewat lg:order-last) */}
-        <div 
-          className="hidden lg:flex flex-col justify-between p-12 relative bg-cover bg-center border-l border-white/5 order-first lg:order-last"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1576267423048-15c0040fec78?auto=format&fit=crop&w=600&q=60')` }}
-        >
-        {/* Overlay Gelap */}
+      {/* SISI KANAN: GAMBAR & BRANDING */}
+      <div 
+        className="hidden lg:flex flex-col justify-between p-12 relative bg-cover bg-center border-l border-white/5 order-first lg:order-last animate-fade-in"
+        style={{ backgroundImage: `url('https://images.unsplash.com/photo-1576267423048-15c0040fec78?auto=format&fit=crop&w=600&q=60')` }}
+      >
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30 z-0" />
 
-        {/* Brand Header */}
         <div className="relative z-10 flex items-center gap-2">
           <div className="w-8 h-8 bg-[#e05c2a] rounded-lg flex items-center justify-center shadow-md">
             <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -151,8 +157,7 @@ export default function Register({ navigate }: RegisterProps) {
           <span className="font-head text-sm font-bold tracking-wider uppercase text-white">Fin Sustain</span>
         </div>
 
-        {/* Slogan */}
-        <div className="relative z-10 max-w-md mb-8 animate-fadeIn">
+        <div className="relative z-10 max-w-md mb-8">
           <h1 className="font-head text-3xl md:text-4xl font-black text-white italic leading-tight mb-4">
             "Satu Langkah Kecil, Dampak Besar Berkelanjutan."
           </h1>
