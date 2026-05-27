@@ -6,7 +6,6 @@ interface IndexProps {
 }
 
 export default function Index({ navigate }: IndexProps) {
-  // Di masa mendatang, nilai ini bisa diambil dari auth state / global context
   const [isLoggedIn] = useState<boolean>(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [activeNav, setActiveNav] = useState<string>("beranda");
@@ -41,80 +40,82 @@ export default function Index({ navigate }: IndexProps) {
     <div id="page-home" className="block min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased overflow-y-auto pt-[76px]">
       
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between h-[76px] px-6 md:px-12 bg-[#2d2d2d]/95 backdrop-blur-[14px] border-b border-white/[0.08]">
-        <div className="flex items-center gap-3 font-head text-[1.2rem] font-bold text-[#f0ece8] cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <div className="w-[40px] h-[40px] bg-[#e05c2a] rounded-xl flex items-center justify-center font-extrabold text-[1.15rem] text-white shrink-0 shadow-md">
-            <svg viewBox="0 0 24 24" className="w-[22px] h-[22px] fill-current text-white">
-              <path d="M12 2L2 22h20L12 2zm0 4.3L18.8 19H5.2L12 6.3z" />
-            </svg>
-          </div>
-          <span className="tracking-wide">F-Tech <span className="text-[#e05c2a]">Solution</span></span>
-        </div>
-
-        <div className="hidden md:flex items-center gap-10">
-          <span 
-            className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
-              activeNav === "beranda" 
-                ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
-                : "text-[#b0a89e] hover:text-[#f0ece8]"
-            }`}
-            onClick={() => {
-              setActiveNav("beranda");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            Beranda
-          </span>
-          <span 
-            className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
-              activeNav === "fitur" 
-                ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
-                : "text-[#b0a89e] hover:text-[#f0ece8]"
-            }`}
-            onClick={() => {
-              setActiveNav("fitur");
-              scrollToSection("langkah-pengajuan");
-            }}
-          >
-            Fitur
-          </span>
-          <span 
-            className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
-              activeNav === "faq" 
-                ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
-                : "text-[#b0a89e] hover:text-[#f0ece8]"
-            }`}
-            onClick={() => {
-              setActiveNav("faq");
-              scrollToSection("faq-section");
-            }}
-          >
-            FAQ
-          </span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {!isLoggedIn ? (
-            <>
-              <button 
-                onClick={() => navigate("login")} 
-                className="inline-flex items-center justify-center font-semibold text-[0.9rem] px-6 py-2.5 rounded-full border-[1.5px] border-[#b0a89e] text-[#f0ece8] hover:border-[#f0ece8] hover:bg-white/[0.05] transition-all cursor-pointer"
-              >
-                Masuk
-              </button>
-              <button 
-                onClick={() => navigate("register")} 
-                className="inline-flex items-center justify-center font-bold text-[0.9rem] px-6 py-2.5 rounded-full bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_6px_20px_rgba(224,92,42,0.35)] hover:-translate-y-[1px] transition-all cursor-pointer"
-              >
-                Daftar Akun
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center gap-2 bg-white/[0.10] border border-white/[0.12] rounded-full p-[6px] pr-3.5 text-[0.88rem] font-medium">
-              <div className="w-[30px] h-[30px] rounded-full bg-[#e05c2a] flex items-center justify-center text-[0.8rem] font-bold text-white">U</div>
-              <span>User Account</span>
+      <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#2d2d2d]/95 backdrop-blur-[14px] border-b border-white/[0.08]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-[76px] px-6 md:px-12 w-full">
+          <div className="flex items-center gap-3 font-head text-[1.2rem] font-bold text-[#f0ece8] cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            <div className="w-[40px] h-[40px] bg-[#e05c2a] rounded-xl flex items-center justify-center font-extrabold text-[1.15rem] text-white shrink-0 shadow-md">
+              <svg viewBox="0 0 24 24" className="w-[22px] h-[22px] fill-current text-white">
+                <path d="M12 2L2 22h20L12 2zm0 4.3L18.8 19H5.2L12 6.3z" />
+              </svg>
             </div>
-          )}
+            <span className="tracking-wide">F-Tech <span className="text-[#e05c2a]">Solution</span></span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-10">
+            <span 
+              className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
+                activeNav === "beranda" 
+                  ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
+                  : "text-[#b0a89e] hover:text-[#f0ece8]"
+              }`}
+              onClick={() => {
+                setActiveNav("beranda");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              Beranda
+            </span>
+            <span 
+              className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
+                activeNav === "fitur" 
+                  ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
+                  : "text-[#b0a89e] hover:text-[#f0ece8]"
+              }`}
+              onClick={() => {
+                setActiveNav("fitur");
+                scrollToSection("langkah-pengajuan");
+              }}
+            >
+              Fitur
+            </span>
+            <span 
+              className={`font-semibold text-[0.95rem] cursor-pointer relative transition-colors ${
+                activeNav === "faq" 
+                  ? "text-[#e05c2a] after:absolute after:bottom-[-26px] after:left-0 after:w-full after:h-[2px] after:bg-[#e05c2a]" 
+                  : "text-[#b0a89e] hover:text-[#f0ece8]"
+              }`}
+              onClick={() => {
+                setActiveNav("faq");
+                scrollToSection("faq-section");
+              }}
+            >
+              FAQ
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {!isLoggedIn ? (
+              <>
+                <button 
+                  onClick={() => navigate("login")} 
+                  className="inline-flex items-center justify-center font-semibold text-[0.9rem] px-6 py-2.5 rounded-full border-[1.5px] border-[#b0a89e] text-[#f0ece8] hover:border-[#f0ece8] hover:bg-white/[0.05] transition-all cursor-pointer"
+                >
+                  Masuk
+                </button>
+                <button 
+                  onClick={() => navigate("register")} 
+                  className="inline-flex items-center justify-center font-bold text-[0.9rem] px-6 py-2.5 rounded-full bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_6px_20px_rgba(224,92,42,0.35)] hover:-translate-y-[1px] transition-all cursor-pointer"
+                >
+                  Daftar Akun
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 bg-white/[0.10] border border-white/[0.12] rounded-full p-[6px] pr-3.5 text-[0.88rem] font-medium">
+                <div className="w-[30px] h-[30px] rounded-full bg-[#e05c2a] flex items-center justify-center text-[0.8rem] font-bold text-white">U</div>
+                <span>User Account</span>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -132,7 +133,6 @@ export default function Index({ navigate }: IndexProps) {
               F-Tech Solution mempercepat pertumbuhan bisnis Anda melalui integrasi modal hijau, analisis cerdas, dan monitoring keberlanjutan lingkungan.
             </p>
             
-            {/* AREA CTA YANG SUDAH DIOPTIMALKAN */}
             <div className="pt-2 space-y-3.5">
               {!isLoggedIn ? (
                 <>
