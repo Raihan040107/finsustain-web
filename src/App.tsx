@@ -7,11 +7,13 @@ import TambahUsaha from "./pages/TambahUsaha";
 import FormPertanyaan from "./pages/FormPertanyaan";
 import AnalisisESG from "./pages/AnalisisESG";
 import PengajuanKreditHijau from "./pages/PengajuanKreditHijau";
+import RiwayatEvaluasi from "./pages/RiwayatEvaluasi";
+import PortofolioUsaha from "./pages/PortofolioUsaha";
 import "./index.css";
 
 export type PageName =
   | "home" | "dashboard" | "login" | "register" | "upload"
-  | "step1" | "step2" | "step3" | "step4" | "analisis" | "pengajuan-kredit";
+  | "step1" | "step2" | "step3" | "step4" | "analisis" | "pengajuan-kredit" | "riwayat" | "portofolio";
 
 export interface BusinessData {
   id: string;
@@ -20,8 +22,20 @@ export interface BusinessData {
   status: "Dalam Proses" | "Diverifikasi";
 }
 
+const validPages: PageName[] = [
+  "home", "dashboard", "login", "register", "upload",
+  "step1", "step2", "step3", "step4", "analisis", "pengajuan-kredit", "riwayat", "portofolio",
+];
+
+function isValidPageName(page: string): page is PageName {
+  return validPages.includes(page as PageName);
+}
+
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<PageName>("home");
+  const [currentPage, setCurrentPage] = useState<PageName>(() => {
+    const savedPage = localStorage.getItem("activePage");
+    return savedPage && isValidPageName(savedPage) ? savedPage : "home";
+  });
 
   const [businessList, setBusinessList] = useState<BusinessData[]>([
     { id: "1", namaUsaha: "PT Tekno Hijau Sejahtera", tanggalDiajukan: "25 Mei 2026", status: "Diverifikasi" },
@@ -31,6 +45,7 @@ export default function App() {
 
   const navigate = (page: PageName) => {
     setCurrentPage(page);
+    localStorage.setItem("activePage", page);
     window.scrollTo(0, 0);
   };
 
@@ -66,13 +81,15 @@ export default function App() {
           {(() => {
             switch (currentPage) {
               case "home": return <Index navigate={navigate} />;
-              case "dashboard": return <Dashboard navigate={navigate} businessList={businessList} setBusinessList={setBusinessList} setActiveBusinessName={setActiveBusinessName} />;
+              case "dashboard": return <Dashboard Maps={navigate} businessList={businessList} setBusinessList={setBusinessList} setActiveBusinessName={setActiveBusinessName} />;
               case "upload": return <TambahUsaha isOpen={true} onClose={() => navigate("dashboard")} setBusinessList={setBusinessList} />;
               case "step1": case "step2": case "step3": case "step4": 
                 const stepNum = parseInt(currentPage.replace("step", "")) as 1 | 2 | 3 | 4;
                 return <FormPertanyaan navigate={navigate} step={stepNum} />;
               case "analisis": return <AnalisisESG navigate={navigate} namaUsaha={activeBusinessName} />;
               case "pengajuan-kredit": return <PengajuanKreditHijau navigate={navigate} namaUsaha={activeBusinessName} />;
+              case "riwayat": return <RiwayatEvaluasi navigate={navigate} businessList={businessList} />;
+              case "portofolio": return <PortofolioUsaha navigate={navigate} businessList={businessList} />;
               default: return <Index navigate={navigate} />;
             }
           })()}

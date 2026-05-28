@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { PageName } from "../App";
 
 interface PengajuanKreditHijauProps {

@@ -1,4 +1,3 @@
-import React from "react";
 import type { PageName } from "../App";
 
 interface AnalisisESGProps {
