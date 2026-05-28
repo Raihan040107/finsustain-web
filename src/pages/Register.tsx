@@ -7,7 +7,8 @@ interface RegisterProps {
 }
 
 export default function Register({ navigate }: RegisterProps) {
-  const [username, setUsername] = useState("");
+  const [namaLengkap, setNamaLengkap] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   
@@ -24,7 +25,7 @@ export default function Register({ navigate }: RegisterProps) {
     // Munculin Toast
     setToast({
       show: true,
-      message: `Registrasi Berhasil! Selamat datang, ${username}.`,
+      message: `Registrasi Berhasil! Selamat datang, ${namaLengkap}.`,
       type: "success"
     });
 
@@ -60,7 +61,7 @@ export default function Register({ navigate }: RegisterProps) {
 
           <div className="text-center mb-8">
             <h2 className="text-lg font-bold tracking-tight text-white">
-              Selamat Datang di Fin Sustain
+              Selamat Datang di F-Tech Solution
             </h2>
             <p className="mt-1 text-xs text-gray-400 font-normal">
               Daftar untuk mulai mengelola portofolio keberlanjutan Anda
@@ -80,9 +81,26 @@ export default function Register({ navigate }: RegisterProps) {
               <input
                 type="text"
                 required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Nama Perusahaan / Username"
+                value={namaLengkap}
+                onChange={(e) => setNamaLengkap(e.target.value)}
+                placeholder="Nama Lengkap"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-400 transition-all"
+              />
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.5 4.5h15v15h-15v-15z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.5 7.5l7.5 5 7.5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-400 transition-all"
               />
             </div>
@@ -90,7 +108,7 @@ export default function Register({ navigate }: RegisterProps) {
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1 1.7 0 3.1 1.4 3.1 3.1v2z" />
+                  <path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 0c1.7 0 3 1.3 3 3v2h-6v-2c0-1.7 1.3-3 3-3zm-4 5h8v5H8v-5z" />
                 </svg>
               </div>
               <input
@@ -154,13 +172,13 @@ export default function Register({ navigate }: RegisterProps) {
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-[#2d2d2d]/40 z-0" />
 
-        <div className="relative z-10 flex items-center gap-2">
+          <div className="relative z-10 flex items-center gap-2">
           <div className="w-8 h-8 bg-[#e05c2a] rounded-lg flex items-center justify-center shadow-md">
             <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
               <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm3 12h2v-2h2v2h2v2h-2v2h-2v-2h-2v-2z" />
             </svg>
           </div>
-          <span className="font-head text-sm font-bold tracking-wider uppercase text-white">Fin Sustain</span>
+          <span className="font-head text-sm font-bold tracking-wider uppercase text-white">F-Tech Solution</span>
         </div>
 
         <div className="relative z-10 max-w-md mb-8">

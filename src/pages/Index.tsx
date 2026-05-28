@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { PageName } from "../App";
 
 interface IndexProps {
@@ -9,6 +9,25 @@ export default function Index({ navigate }: IndexProps) {
   const [isLoggedIn] = useState<boolean>(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [activeNav, setActiveNav] = useState<string>("beranda");
+
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll('[data-reveal]')) as HTMLElement[];
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          el.classList.remove('opacity-0', 'translate-y-10');
+          el.classList.add('opacity-100', 'translate-y-0');
+          obs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -122,7 +141,7 @@ export default function Index({ navigate }: IndexProps) {
       {/* HERO SECTION */}
       <section className="w-full bg-[radial-gradient(ellipse_90%_100%_at_65%_40%,#4a3e38_0%,#2d2d2d_65%)] pt-12 pb-24 md:pt-16 md:pb-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-16">
-          <div className="w-full lg:max-w-[550px] space-y-6 text-left">
+          <div data-reveal className="w-full lg:max-w-[550px] space-y-6 text-left opacity-0 translate-y-10 transition-all duration-1000 ease-out">
             <h1 className="font-head text-4xl md:text-[3.4rem] font-extrabold text-white leading-[1.2] tracking-tight">
               Solusi Finansial untuk <br className="hidden md:inline" />
               <span className="bg-gradient-to-r from-[#e05c2a] to-[#f06b35] bg-clip-text text-transparent">
@@ -164,7 +183,7 @@ export default function Index({ navigate }: IndexProps) {
           </div>
 
           {/* MOCKUP KANAN */}
-          <div className="w-full lg:max-w-[520px] flex justify-center lg:justify-end items-center">
+          <div data-reveal className="w-full lg:max-w-[520px] flex justify-center lg:justify-end items-center opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-150">
             <div className="w-full max-w-[480px]">
               <div className="bg-[#1a1a1a] rounded-[16px] border-2 border-[#444] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.6)]">
                 <div className="bg-[#252525] h-8 flex items-center px-4 gap-2 border-b border-white/5">
@@ -216,7 +235,7 @@ export default function Index({ navigate }: IndexProps) {
 
       {/* STATS SECTION */}
       <section className="w-full bg-white/[0.03] border-t border-b border-white/[0.08] py-10 md:py-12">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div data-reveal className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-8 opacity-0 translate-y-10 transition-all duration-1000 ease-out">
           <div className="text-center space-y-1">
             <div className="font-head text-3xl md:text-[2.5rem] font-black text-[#e05c2a] leading-normal tracking-tight">
               Rp 12.8T+
@@ -253,7 +272,7 @@ export default function Index({ navigate }: IndexProps) {
       </section>
 
       {/* ESG SECTION */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
+      <section data-reveal className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 opacity-0 translate-y-10 transition-all duration-1000 ease-out">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="bg-white/[0.03] border border-white/10 rounded-[24px] p-8 md:p-10 relative overflow-hidden shadow-lg">
             <div className="absolute -top-16 -right-16 w-[220px] h-[220px] bg-[radial-gradient(circle,rgba(224,92,42,0.15)_0%,transparent_70%)] rounded-full" />
@@ -310,24 +329,24 @@ export default function Index({ navigate }: IndexProps) {
       {/* WHY US SECTION */}
       <section className="w-full bg-white/[0.01] border-t border-white/[0.06] py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+          <div data-reveal className="text-center max-w-2xl mx-auto mb-16 space-y-3 opacity-0 translate-y-10 transition-all duration-1000 ease-out">
             <div className="text-[0.8rem] font-bold tracking-[0.15em] text-[#e05c2a] uppercase">Keunggulan</div>
             <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white leading-tight">Mengapa Menggunakan F-Tech Platform?</h2>
             <p className="text-[0.95rem] text-[#b0a89e] leading-[1.7]">Kami menyederhanakan proses audit yang awalnya berbulan-bulan menjadi hitungan menit demi ekosistem transaksi finansial yang efektif.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm">
+            <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-100">
               <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">01</div>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Suku Bunga Preferensial</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Dapatkan keringanan nilai suku bunga pinjaman modal yang jauh lebih rendah bagi bisnis dengan skor komitmen pelestarian hijau yang tinggi.</p>
             </div>
-            <div className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm">
+            <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-200">
               <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">02</div>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Pelaporan Otomatis</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Sistem kami akan mengekstrak data dari dokumen laporan operasional harian Anda menjadi berkas siap pakai untuk dikirimkan langsung ke investor.</p>
             </div>
-            <div className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm">
+            <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-300">
               <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">03</div>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Ekosistem Investor Luas</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Tembus akses pendanaan lintas negara ke puluhan lembaga perbankan korporasi dan institusi Ventura yang mencari portfolio berdampak iklim positif.</p>
@@ -346,22 +365,22 @@ export default function Index({ navigate }: IndexProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-6 relative">
           <div className="hidden lg:block absolute top-[40px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-[#e05c2a] to-[#e05c2a]/20 z-0" />
           
-          <div className="text-center px-4 relative z-10 space-y-4">
+          <div data-reveal className="text-center px-4 relative z-10 space-y-4 opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-100">
             <div className="w-[80px] h-[80px] rounded-full bg-[#e05c2a] text-white flex items-center justify-center font-head text-[1.5rem] font-black shadow-[0_8px_24px_rgba(224,92,42,0.35)] mx-auto">1</div>
             <h4 className="font-head text-[1rem] font-bold text-white">Unggah Profil</h4>
             <p className="text-[0.85rem] text-[#b0a89e] leading-[1.6]">Daftarkan legalitas usaha serta masukkan dokumen keuangan operasional dasar.</p>
           </div>
-          <div className="text-center px-4 relative z-10 space-y-4">
+          <div data-reveal className="text-center px-4 relative z-10 space-y-4 opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-200">
             <div className="w-[80px] h-[80px] rounded-full bg-white/[0.06] border-2 border-white/[0.15] text-[#b0a89e] flex items-center justify-center font-head text-[1.5rem] font-black mx-auto">2</div>
             <h4 className="font-head text-[1rem] font-bold text-white">Evaluasi ESG</h4>
             <p className="text-[0.85rem] text-[#b0a89e] leading-[1.6]">Isi kuesioner indikator hijau terpadu mengenai konsumsi energi & tata kelola sosial bisnis.</p>
           </div>
-          <div className="text-center px-4 relative z-10 space-y-4">
+          <div data-reveal className="text-center px-4 relative z-10 space-y-4 opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-300">
             <div className="w-[80px] h-[80px] rounded-full bg-white/[0.06] border-2 border-white/[0.15] text-[#b0a89e] flex items-center justify-center font-head text-[1.5rem] font-black mx-auto">3</div>
             <h4 className="font-head text-[1rem] font-bold text-white">Terbitkan Skor</h4>
             <p className="text-[0.85rem] text-[#b0a89e] leading-[1.6]">Algoritma AI cerdas memproses nilai peringkat kelayakan investasi berkelanjutan Anda.</p>
           </div>
-          <div className="text-center px-4 relative z-10 space-y-4">
+          <div data-reveal className="text-center px-4 relative z-10 space-y-4 opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-400">
             <div className="w-[80px] h-[80px] rounded-full bg-white/[0.06] border-2 border-white/[0.15] text-[#b0a89e] flex items-center justify-center font-head text-[1.5rem] font-black mx-auto">4</div>
             <h4 className="font-head text-[1rem] font-bold text-white">Pencairan Dana</h4>
             <p className="text-[0.85rem] text-[#b0a89e] leading-[1.6]">Hubungkan profil hijau Anda dengan kontrak penawaran investasi dari ekosistem modal bank.</p>
@@ -376,7 +395,7 @@ export default function Index({ navigate }: IndexProps) {
           <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white">UMKM yang Sukses Bertransisi Hijau</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm">
+          <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-100">
             <div className="bg-[#e05c2a]/10 border-b border-[#e05c2a]/15 p-5 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-[#e05c2a] flex items-center justify-center font-head font-black text-[0.9rem] text-white">01</div>
               <h3 className="font-head text-[1rem] font-bold text-white">Koperasi Tani Agro Lestari</h3>
@@ -389,7 +408,7 @@ export default function Index({ navigate }: IndexProps) {
               </div>
             </div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm">
+          <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-200">
             <div className="bg-[#e05c2a]/10 border-b border-[#e05c2a]/15 p-5 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-[#e05c2a] flex items-center justify-center font-head font-black text-[0.9rem] text-white">02</div>
               <h3 className="font-head text-[1rem] font-bold text-white">PT Eco Plastik Manufaktur</h3>
@@ -413,19 +432,19 @@ export default function Index({ navigate }: IndexProps) {
             <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white">Mendukung Penuh Target PBB (SDGs)</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#4caf50]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#4caf50] shadow-sm">
+            <div data-reveal className="bg-[#4caf50]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#4caf50] shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-100">
               <div className="font-head text-[2.8rem] font-black opacity-[0.08] absolute right-6 top-4 leading-none text-white">07</div>
               <span className="inline-block bg-[#4caf50]/15 text-[#81c784] px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-widest mb-4 uppercase">SDG 7</span>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Energi Bersih & Terjangkau</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Meningkatkan adopsi peralihan pembangkit listrik tenaga surya dan biomassa alternatif di sektor usaha daerah terpencil.</p>
             </div>
-            <div className="bg-[#ff9800]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#ff9800] shadow-sm">
+            <div data-reveal className="bg-[#ff9800]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#ff9800] shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-200">
               <div className="font-head text-[2.8rem] font-black opacity-[0.08] absolute right-6 top-4 leading-none text-white">12</div>
               <span className="inline-block bg-[#ff9800]/15 text-[#ffb74d] px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-widest mb-4 uppercase">SDG 12</span>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Konsumsi & Produksi Bertanggung Jawab</h3>
               <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">Menekan pemborosan sisa bahan baku manufaktur lewat skema manajemen rantai sirkular ekonomi sisa produksi.</p>
             </div>
-            <div className="bg-[#2196f3]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#2196f3] shadow-sm">
+            <div data-reveal className="bg-[#2196f3]/[0.05] border border-white/[0.08] rounded-[20px] p-8 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[#2196f3] shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-300">
               <div className="font-head text-[2.8rem] font-black opacity-[0.08] absolute right-6 top-4 leading-none text-white">13</div>
               <span className="inline-block bg-[#2196f3]/15 text-[#64b5f6] px-3 py-1 rounded-full text-[0.7rem] font-bold tracking-widest mb-4 uppercase">SDG 13</span>
               <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Penanganan Perubahan Iklim</h3>

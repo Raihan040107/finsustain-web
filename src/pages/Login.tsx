@@ -107,7 +107,7 @@ export default function Login({ navigate }: LoginProps) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email Bisnis / Username"
+                placeholder="Email / Username"
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-[#e05c2a] bg-[#4a4a4a] text-white placeholder-gray-400 transition-all"
               />
             </div>
