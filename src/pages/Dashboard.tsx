@@ -7,9 +7,10 @@ interface DashboardProps {
   businessList: BusinessData[]; 
   setBusinessList: React.Dispatch<React.SetStateAction<BusinessData[]>>; 
   setActiveBusinessName: (name: string) => void; 
+  logout: () => void;
 }
 
-export default function Dashboard({ Maps, businessList, setBusinessList, setActiveBusinessName }: DashboardProps) {
+export default function Dashboard({ Maps, businessList, setBusinessList, setActiveBusinessName, logout }: DashboardProps) {
   const navigate = Maps;
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -81,7 +82,7 @@ export default function Dashboard({ Maps, businessList, setBusinessList, setActi
             </div>
           </div>
           
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors text-sm font-medium text-left">
+          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors text-sm font-medium text-left">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>

@@ -4,6 +4,7 @@ interface RiwayatEvaluasiProps {
   Maps?: (page: PageName) => void;
   navigate?: (page: PageName) => void;
   businessList: BusinessData[];
+  logout?: () => void;
 }
 
 type StatusKelulusan = 'Lulus Sertifikasi' | 'Dalam Peninjauan' | 'Perlu Perbaikan';
@@ -31,7 +32,7 @@ function getStatusTone(status: StatusKelulusan) {
   return 'bg-[#ef5350]/10 text-[#f28b82] border-[#ef5350]/20';
 }
 
-export default function RiwayatEvaluasi({ Maps, navigate, businessList }: RiwayatEvaluasiProps) {
+export default function RiwayatEvaluasi({ Maps, navigate, businessList, logout }: RiwayatEvaluasiProps) {
   const route = Maps ?? navigate;
   const historyData: HistoryRecord[] = businessList.length
     ? businessList.map((item, index) => ({
@@ -103,7 +104,7 @@ export default function RiwayatEvaluasi({ Maps, navigate, businessList }: Riwaya
             </div>
           </div>
 
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors text-sm font-medium text-left">
+          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors text-sm font-medium text-left">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>

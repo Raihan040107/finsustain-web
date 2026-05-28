@@ -3,6 +3,7 @@ import type { BusinessData, PageName } from '../App';
 interface PortofolioUsahaProps {
   navigate: (page: PageName) => void;
   businessList: BusinessData[];
+  logout: () => void;
 }
 
 const sectorLabels = [
@@ -13,7 +14,7 @@ const sectorLabels = [
   'Kesehatan',
 ];
 
-export default function PortofolioUsaha({ navigate, businessList }: PortofolioUsahaProps) {
+export default function PortofolioUsaha({ navigate, businessList, logout }: PortofolioUsahaProps) {
   return (
     <div className="min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased flex flex-col md:flex-row">
       <aside className="w-full md:w-64 bg-[#232323] border-r border-white/[0.05] p-6 flex flex-col shrink-0">
@@ -67,7 +68,7 @@ export default function PortofolioUsaha({ navigate, businessList }: PortofolioUs
               <p className="text-xs text-[#b0a89e] truncate">Pemilik UMKM</p>
             </div>
           </div>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#e05c2a] hover:bg-[#f06b35]/10 transition-colors text-sm font-medium text-left">
+          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#e05c2a] hover:bg-[#f06b35]/10 transition-colors text-sm font-medium text-left">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>

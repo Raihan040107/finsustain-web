@@ -49,6 +49,13 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  const logout = () => {
+    localStorage.removeItem("activePage");
+    setCurrentPage("home");
+    setActiveBusinessName("");
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="min-h-screen bg-[#2d2d2d] text-white font-body antialiased overflow-x-hidden relative">
       
@@ -81,15 +88,15 @@ export default function App() {
           {(() => {
             switch (currentPage) {
               case "home": return <Index navigate={navigate} />;
-              case "dashboard": return <Dashboard Maps={navigate} businessList={businessList} setBusinessList={setBusinessList} setActiveBusinessName={setActiveBusinessName} />;
+              case "dashboard": return <Dashboard Maps={navigate} businessList={businessList} setBusinessList={setBusinessList} setActiveBusinessName={setActiveBusinessName} logout={logout} />;
               case "upload": return <TambahUsaha isOpen={true} onClose={() => navigate("dashboard")} setBusinessList={setBusinessList} />;
               case "step1": case "step2": case "step3": case "step4": 
                 const stepNum = parseInt(currentPage.replace("step", "")) as 1 | 2 | 3 | 4;
                 return <FormPertanyaan navigate={navigate} step={stepNum} />;
               case "analisis": return <AnalisisESG navigate={navigate} namaUsaha={activeBusinessName} />;
               case "pengajuan-kredit": return <PengajuanKreditHijau navigate={navigate} namaUsaha={activeBusinessName} />;
-              case "riwayat": return <RiwayatEvaluasi navigate={navigate} businessList={businessList} />;
-              case "portofolio": return <PortofolioUsaha navigate={navigate} businessList={businessList} />;
+              case "riwayat": return <RiwayatEvaluasi navigate={navigate} businessList={businessList} logout={logout} />;
+              case "portofolio": return <PortofolioUsaha navigate={navigate} businessList={businessList} logout={logout} />;
               default: return <Index navigate={navigate} />;
             }
           })()}
