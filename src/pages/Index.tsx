@@ -137,7 +137,7 @@ export default function Index({ navigate }: IndexProps) {
               {!isLoggedIn ? (
                 <>
                   <button 
-                    onClick={() => navigate("step1")} 
+                    onClick={() => navigate("login")} 
                     className="inline-flex items-center justify-center font-bold text-[0.95rem] px-8 py-3.5 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] hover:shadow-[0_8px_24px_rgba(224,92,42,0.3)] hover:-translate-y-[1px] transition-all cursor-pointer"
                   >
                     Mulai Sekarang
