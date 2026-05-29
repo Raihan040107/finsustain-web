@@ -16,43 +16,32 @@ export default function AnalisisESG({ navigate, namaUsaha }: AnalisisESGProps) {
 
   return (
     <div className="min-h-screen bg-[#2d2d2d] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8 font-body antialiased text-white relative overflow-hidden">
-      
       {/* Background Efek Aura Glow Oranye Lembut */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#e05c2a]/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
       {/* Container Card Utama */}
       <div className="w-full sm:max-w-xl bg-[#3a3a3a] p-8 sm:p-10 rounded-[32px] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.6)] border border-white/5 transition-all relative z-10 backdrop-blur-sm">
-        
         {/* Header Hasil */}
         <div className="text-center mb-8 flex flex-col items-center">
           <div className="relative mb-6">
-            <h2 className="font-head text-3xl font-black tracking-wide text-white drop-shadow-md truncate max-w-[350px]">
-              {namaUsaha || "Toko Sinar Mentari"}
-            </h2>
+            <h2 className="font-head text-3xl font-black tracking-wide text-white drop-shadow-md truncate max-w-[350px]">{namaUsaha || "Toko Sinar Mentari"}</h2>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-20 h-1 bg-[#e05c2a] rounded-full"></div>
           </div>
 
-          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1 mb-6">
-            Raport Analisis Keberlanjutan
-          </p>
-          
+          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1 mb-6">Raport Analisis Keberlanjutan</p>
+
           {/* Badge Skor Utama - DESAIN PRESTISIUS & PROPORSIONAL */}
           <div className="inline-flex items-center justify-center bg-gradient-to-br from-[#4a4a4a] to-[#3a3a3a] p-[1.5px] rounded-2xl shadow-[0_15px_35px_-5px_rgba(0,0,0,0.5)] border border-white/10 group hover:border-[#e05c2a]/30 transition-all duration-500">
             <div className="flex items-center bg-[#2d2d2d]/90 px-6 py-3 rounded-[15px] relative overflow-hidden backdrop-blur-md">
-              
               {/* Efek gradasi glossy halus di latar belakang badge */}
               <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none"></div>
 
               {/* Sisi Kiri: Nilai Angka */}
               <div className="flex items-baseline pr-5 select-none">
-                <span className="text-4xl font-black text-[#e05c2a] tracking-tight drop-shadow-[0_4px_12px_rgba(224,92,42,0.25)]">
-                  {skorUtama}
-                </span>
-                <span className="text-xs font-bold text-gray-500 ml-1 tracking-wider uppercase">
-                  /100
-                </span>
+                <span className="text-4xl font-black text-[#e05c2a] tracking-tight drop-shadow-[0_4px_12px_rgba(224,92,42,0.25)]">{skorUtama}</span>
+                <span className="text-xs font-bold text-gray-500 ml-1 tracking-wider uppercase">/100</span>
               </div>
-              
+
               {/* Garis Pembatas Vertikal yang Minimalis & Mewah */}
               <div className="w-[1px] h-7 bg-gradient-to-b from-white/5 via-white/20 to-white/5"></div>
 
@@ -66,38 +55,33 @@ export default function AnalisisESG({ navigate, namaUsaha }: AnalisisESGProps) {
                   Cukup
                 </span>
               </div>
-
             </div>
           </div>
         </div>
 
         {/* Konten Utama */}
         <div className="space-y-6 pt-6 border-t border-white/5 text-left">
-          
           {/* Rincian Skor Aspek (ESG) */}
           <div className="bg-[#4a4a4a]/50 p-5 rounded-2xl space-y-4 border border-white/5 shadow-inner">
-            
             {/* Navigasi Header Sub-Aspek */}
             <div className="flex items-center justify-between border-b border-white/5 pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-sm">📊</span>
-                <h4 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#e05c2a]">
-                  Rincian Skor Aspek ESG
-                </h4>
+                <h4 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#e05c2a]">Rincian Skor Aspek ESG</h4>
               </div>
               <div className="flex items-center gap-1.5 bg-[#3a3a3a] px-2.5 py-1 rounded-md border border-white/5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">Target: 80+</span>
               </div>
             </div>
-            
+
             {/* Progress Bars */}
             <div className="space-y-4 pt-1">
               {dataAspek.map((item, index) => (
                 <div key={index} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-semibold">
                     <span className="text-gray-300 flex items-center gap-2">
-                      <span className="text-base">{item.ikon}</span> 
+                      <span className="text-base">{item.ikon}</span>
                       {item.label}
                     </span>
                     <span className="text-white font-bold">{item.skor} / 100</span>
@@ -115,17 +99,19 @@ export default function AnalisisESG({ navigate, namaUsaha }: AnalisisESGProps) {
           {/* Bagian Insight Rekomendasi */}
           <div className="bg-[#4a4a4a]/50 p-5 rounded-2xl space-y-3 border border-white/5 shadow-inner relative overflow-hidden">
             <div className="absolute -bottom-5 -right-5 text-7xl opacity-[0.03] rotate-[-15deg] pointer-events-none">💡</div>
-            <h4 className="text-[12px] font-black uppercase tracking-wider text-[#e05c2a] border-b border-white/5 pb-2">
-              💡 Rekomendasi Strategis UMKM
-            </h4>
+            <h4 className="text-[12px] font-black uppercase tracking-wider text-[#e05c2a] border-b border-white/5 pb-2">💡 Rekomendasi Strategis UMKM</h4>
             <ul className="space-y-2.5 text-xs text-gray-200 font-medium leading-relaxed pl-1 pt-1">
               <li className="flex items-start gap-2.5 group">
                 <span className="text-[#e05c2a] font-black text-sm mt-0.5 group-hover:scale-125 transition-transform">•</span>
-                <span className="group-hover:text-white transition-colors">Ganti sumber listrik ke <strong>panel surya mini 300W</strong> untuk meningkatkan skor Lingkungan.</span>
+                <span className="group-hover:text-white transition-colors">
+                  Ganti sumber listrik ke <strong>panel surya mini 300W</strong> untuk meningkatkan skor Lingkungan.
+                </span>
               </li>
               <li className="flex items-start gap-2.5 group">
                 <span className="text-[#e05c2a] font-black text-sm mt-0.5 group-hover:scale-125 transition-transform">•</span>
-                <span className="group-hover:text-white transition-colors">Adopsi <strong>pembukuan finansial digital</strong> untuk menaikkan skor Tata Kelola.</span>
+                <span className="group-hover:text-white transition-colors">
+                  Adopsi <strong>pembukuan finansial digital</strong> untuk menaikkan skor Tata Kelola.
+                </span>
               </li>
               <li className="flex items-start gap-2.5 group">
                 <span className="text-[#e05c2a] font-black text-sm mt-0.5 group-hover:scale-125 transition-transform">•</span>
@@ -133,7 +119,6 @@ export default function AnalisisESG({ navigate, namaUsaha }: AnalisisESGProps) {
               </li>
             </ul>
           </div>
-
         </div>
 
         {/* Bagian Tombol Aksi Bawah */}
@@ -157,7 +142,6 @@ export default function AnalisisESG({ navigate, namaUsaha }: AnalisisESGProps) {
             Lanjut Kredit Hijau <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
           </button>
         </div>
-
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import type { Pertanyaan, User } from "../../types";
 import Sidebar from "../../components/admin/Sidebar";
 import Topbar from "../../components/admin/Topbar";
 import OverviewPage from "./OverviewPage";
-import PertanyaanPage from "./PertanyaanPage";
+import PertanyaanPage from "./AdminPertanyaan";
 import UsersPage from "./UsersPage";
 import ComingSoonPage from "./ComingSoonPage";
 
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
         return <OverviewPage totalPertanyaan={pertanyaan.length} />;
 
       case "pertanyaan":
-        return <PertanyaanPage pertanyaan={pertanyaan} onRefresh={loadPertanyaan} />;
+        return <PertanyaanPage />;
 
       case "users":
         return <UsersPage users={users} />;

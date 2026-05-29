@@ -20,11 +20,11 @@ export default function Login({ navigate }: LoginProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setToast({
       show: true,
       message: "Login Berhasil! Mengalihkan ke Dashboard...",
-      type: "success"
+      type: "success",
     });
 
     // Kasih jeda 1.5 detik biar toast kebaca
@@ -35,18 +35,11 @@ export default function Login({ navigate }: LoginProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#2d2d2d] font-body antialiased text-white h-screen relative">
-      
       {/* ✨ RENDER TOAST DI SINI */}
-      {toast.show && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast(prev => ({ ...prev, show: false }))} 
-        />
-      )}
+      {toast.show && <Toast message={toast.message} type={toast.type} onClose={() => setToast((prev) => ({ ...prev, show: false }))} />}
 
       {/* SISI KIRI: GAMBAR & BRANDING (Hanya muncul di Desktop) */}
-      <div 
+      <div
         className="hidden lg:flex flex-col justify-between p-12 relative bg-cover bg-center border-r border-white/5"
         style={{ backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80')` }}
       >
@@ -62,19 +55,14 @@ export default function Login({ navigate }: LoginProps) {
         </div>
 
         <div className="relative z-10 max-w-md mb-8">
-          <h1 className="font-head text-3xl md:text-4xl font-black text-white italic leading-tight mb-4">
-            "Sinergi Teknologi, Wujudkan Solusi Berkelanjutan."
-          </h1>
-          <p className="text-gray-300 text-sm leading-relaxed">
-            Akses platform integrasi modal hijau, analisis ESG cerdas, dan monitoring emisi karbon bisnis Anda dalam satu dasbor modern.
-          </p>
+          <h1 className="font-head text-3xl md:text-4xl font-black text-white italic leading-tight mb-4">"Sinergi Teknologi, Wujudkan Solusi Berkelanjutan."</h1>
+          <p className="text-gray-300 text-sm leading-relaxed">Akses platform integrasi modal hijau, analisis ESG cerdas, dan monitoring emisi karbon bisnis Anda dalam satu dasbor modern.</p>
         </div>
       </div>
 
       {/* SISI KANAN: FORM CARD UTAMA */}
       <div className="flex items-center justify-center py-12 px-6 lg:px-8 bg-[#2d2d2d]">
         <div className="w-full max-w-md bg-[#3a3a3a] p-10 rounded-[24px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/5">
-          
           <div className="flex justify-center mb-5">
             <div className="w-12 h-12 bg-[#e05c2a] rounded-xl flex items-center justify-center shadow-md">
               <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
@@ -84,15 +72,9 @@ export default function Login({ navigate }: LoginProps) {
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="text-lg font-bold tracking-tight text-white">
-              Selamat Datang di Fin Sustain
-            </h2>
-            <p className="mt-1 text-xs text-gray-400 font-normal">
-              Masuk untuk mengelola dan memantau pertumbuhan bisnis hijau Anda
-            </p>
-            <h3 className="text-xl font-bold text-white mt-6 tracking-wide">
-              Login
-            </h3>
+            <h2 className="text-lg font-bold tracking-tight text-white">Selamat Datang di Fin Sustain</h2>
+            <p className="mt-1 text-xs text-gray-400 font-normal">Masuk untuk mengelola dan memantau pertumbuhan bisnis hijau Anda</p>
+            <h3 className="text-xl font-bold text-white mt-6 tracking-wide">Login</h3>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -138,9 +120,7 @@ export default function Login({ navigate }: LoginProps) {
                 />
                 <span>Ingat sesi saya</span>
               </label>
-              <span className="text-gray-400 hover:text-white cursor-pointer transition-colors hover:underline">
-                Lupa Kata Sandi?
-              </span>
+              <span className="text-gray-400 hover:text-white cursor-pointer transition-colors hover:underline">Lupa Kata Sandi?</span>
             </div>
 
             <button
@@ -153,11 +133,7 @@ export default function Login({ navigate }: LoginProps) {
 
           <p className="mt-5 text-center text-xs text-gray-400">
             Belum mendaftarkan usaha Anda?{" "}
-            <button 
-              type="button"
-              onClick={() => navigate("register")}
-              className="text-[#e05c2a] font-bold hover:underline bg-transparent cursor-pointer"
-            >
+            <button type="button" onClick={() => navigate("register")} className="text-[#e05c2a] font-bold hover:underline bg-transparent cursor-pointer">
               Daftar Sekarang
             </button>
           </p>
@@ -171,10 +147,8 @@ export default function Login({ navigate }: LoginProps) {
               <span className="group-hover:-translate-x-1 transition-transform">←</span> Kembali ke Beranda
             </button>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 }
