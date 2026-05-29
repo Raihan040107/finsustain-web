@@ -37,7 +37,7 @@ function AdminLogin() {
       }
 
       localStorage.setItem("token", response.data.token);
-      window.location.assign("/admin/dashboard");
+      window.location.assign("/dashboard/admin");
     } catch (err) {
       if (isAxiosError<{ message?: string }>(err)) {
         setError(err.response?.data?.message ?? "Login gagal");
