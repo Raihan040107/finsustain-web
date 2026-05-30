@@ -128,7 +128,7 @@ export default function FormPertanyaan({ navigate, step, idUsaha, refreshBusines
       setCurrentStep(currentStep - 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      navigate("upload");
+      navigate("dashboard");
     }
   };
 
