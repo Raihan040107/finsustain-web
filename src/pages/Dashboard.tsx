@@ -6,21 +6,23 @@ interface DashboardProps {
   Maps: (page: PageName) => void;
   businessList: BusinessData[]; 
   setBusinessList: React.Dispatch<React.SetStateAction<BusinessData[]>>; 
-  setActiveBusinessName: (name: string) => void; 
+  setActiveBusiness: (business: BusinessData) => void;
+  refreshBusinessList: () => Promise<void>;
   logout: () => void;
+  currentUser?: { name: string; email: string } | null;
 }
 
-export default function Dashboard({ Maps, businessList, setBusinessList, setActiveBusinessName, logout }: DashboardProps) {
+export default function Dashboard({ Maps, businessList, setBusinessList, setActiveBusiness, refreshBusinessList, logout, currentUser }: DashboardProps) {
   const navigate = Maps;
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const handleStartEvaluation = (namaUsaha: string) => {
-    setActiveBusinessName(namaUsaha); 
+  const handleStartEvaluation = (business: BusinessData) => {
+    setActiveBusiness(business);
     navigate("step1"); 
   };
 
   const verifiedCount = businessList.filter(b => b.status === "Diverifikasi").length;
-  const pendingCount = businessList.filter(b => b.status !== "Diverifikasi").length;
+  const pendingCount = businessList.filter(b => b.status === "Dalam Proses").length;
 
   return (
     <div className="min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased flex flex-col md:flex-row">
@@ -74,11 +76,11 @@ export default function Dashboard({ Maps, businessList, setBusinessList, setActi
         <div className="pt-6 border-t border-white/[0.05] mt-auto">
           <div className="flex items-center gap-3 mb-4 px-2">
             <div className="w-9 h-9 rounded-full bg-[#4a4a4a] flex items-center justify-center text-sm font-bold border border-white/10">
-              U
+              {(currentUser?.name ?? "U").charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">User Name</p>
-              <p className="text-xs text-[#b0a89e] truncate">Pemilik UMKM</p>
+              <p className="text-sm font-bold text-white truncate">{currentUser?.name ?? "Pengguna"}</p>
+              <p className="text-xs text-[#b0a89e] truncate">{currentUser?.email ?? "Pemilik UMKM"}</p>
             </div>
           </div>
           
@@ -205,6 +207,10 @@ export default function Dashboard({ Maps, businessList, setBusinessList, setActi
                               </svg>
                               Diverifikasi
                             </span>
+                          ) : business.status === "Ditolak" ? (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-[0.75rem] font-bold bg-[#ef5350]/10 border border-[#ef5350]/20 text-[#f28b82]">
+                              Ditolak
+                            </span>
                           ) : (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-[0.75rem] font-bold bg-[#ff9800]/10 border border-[#ff9800]/20 text-[#ffb74d]">
                               <span className="animate-pulse mr-1.5 h-2 w-2 rounded-full bg-[#ffb74d] inline-block"></span>
@@ -215,7 +221,7 @@ export default function Dashboard({ Maps, businessList, setBusinessList, setActi
                         <td className="p-5 pr-6 text-center">
                           {business.status === "Diverifikasi" ? (
                             <button
-                              onClick={() => handleStartEvaluation(business.namaUsaha)}
+                              onClick={() => handleStartEvaluation(business)}
                               className="inline-flex items-center justify-center font-bold text-[0.82rem] px-4 py-2 rounded-lg bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-sm"
                             >
                               Mulai Evaluasi
@@ -244,6 +250,7 @@ export default function Dashboard({ Maps, businessList, setBusinessList, setActi
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)} 
           setBusinessList={setBusinessList} 
+          onCreated={refreshBusinessList}
         />
       </main>
 

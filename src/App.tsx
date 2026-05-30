@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -13,6 +13,8 @@ import PortofolioUsaha from "./pages/PortofolioUsaha";
 // ✨ Admin
 import LoginAdmin from "./pages/LoginAdmin";
 import DashboardAdmin from "./pages/admin/AdminDashboard";
+import api from "./lib/api";
+import type { User } from "./types";
 
 import "./index.css";
 
@@ -35,10 +37,37 @@ export type PageName =
 
 export interface BusinessData {
   id: string;
+  idUsaha: number;
   namaUsaha: string;
+  bidangUsaha: string;
+  alamat: string;
   tanggalDiajukan: string;
-  status: "Dalam Proses" | "Diverifikasi";
+  status: "Dalam Proses" | "Diverifikasi" | "Ditolak";
+  rawStatus: "menunggu" | "terverifikasi" | "ditolak" | string;
+  skorEnvironmental?: number | null;
+  skorSocial?: number | null;
+  skorGovernance?: number | null;
+  skorTotal?: number | null;
+  kategoriSkor?: string | null;
+  tanggalVerifikasi?: string;
+  tanggalEvaluasi?: string;
 }
+
+type ApiUsaha = {
+  id_usaha: number;
+  nama_usaha: string;
+  bidang_usaha: string;
+  alamat: string;
+  status_verifikasi?: string | null;
+  tanggal_registrasi?: string | null;
+  skor_environmental?: number | string | null;
+  skor_social?: number | string | null;
+  skor_governance?: number | string | null;
+  skor_total?: number | string | null;
+  kategori_skor?: string | null;
+  tanggal_verifikasi?: string | null;
+  tanggal_perhitungan?: string | null;
+};
 
 /* =========================================================
    ✨ ROUTE MAPPING
@@ -72,10 +101,54 @@ const pageRoutes: Record<PageName, string> = {
 function getPageFromUrl(): PageName {
   const currentPath = window.location.pathname;
 
-  const found = Object.entries(pageRoutes).find(([_, path]) => path === currentPath);
+  const found = Object.entries(pageRoutes).find((entry) => entry[1] === currentPath);
 
   return found ? (found[0] as PageName) : "home";
 }
+
+function formatDate(date?: string | null) {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function mapStatus(status?: string | null): BusinessData["status"] {
+  if (status === "terverifikasi") return "Diverifikasi";
+  if (status === "ditolak") return "Ditolak";
+  return "Dalam Proses";
+}
+
+function numberOrNull(value: ApiUsaha["skor_total"]) {
+  if (value === null || value === undefined || value === "") return null;
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function mapBusiness(item: ApiUsaha): BusinessData {
+  return {
+    id: String(item.id_usaha),
+    idUsaha: item.id_usaha,
+    namaUsaha: item.nama_usaha,
+    bidangUsaha: item.bidang_usaha,
+    alamat: item.alamat,
+    tanggalDiajukan: formatDate(item.tanggal_registrasi),
+    status: mapStatus(item.status_verifikasi),
+    rawStatus: item.status_verifikasi ?? "menunggu",
+    skorEnvironmental: numberOrNull(item.skor_environmental),
+    skorSocial: numberOrNull(item.skor_social),
+    skorGovernance: numberOrNull(item.skor_governance),
+    skorTotal: numberOrNull(item.skor_total),
+    kategoriSkor: item.kategori_skor ?? null,
+    tanggalVerifikasi: formatDate(item.tanggal_verifikasi),
+    tanggalEvaluasi: formatDate(item.tanggal_perhitungan),
+  };
+}
+
+const BUSINESS_DATA_PAGES: PageName[] = ["dashboard", "portofolio", "riwayat"];
 
 export default function App() {
   /* =========================================================
@@ -88,22 +161,53 @@ export default function App() {
      ✨ BUSINESS DATA
   ========================================================= */
 
-  const [businessList, setBusinessList] = useState<BusinessData[]>([
-    {
-      id: "1",
-      namaUsaha: "PT Tekno Hijau Sejahtera",
-      tanggalDiajukan: "25 Mei 2026",
-      status: "Diverifikasi",
-    },
-    {
-      id: "2",
-      namaUsaha: "CV Sinar Mandiri",
-      tanggalDiajukan: "21 Mei 2026",
-      status: "Dalam Proses",
-    },
-  ]);
 
+  const [businessList, setBusinessList] = useState<BusinessData[]>([]);
+  const [hasLoadedBusinessList, setHasLoadedBusinessList] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeBusinessName, setActiveBusinessName] = useState<string>("");
+  const [activeBusinessId, setActiveBusinessId] = useState<number | null>(() => {
+    const saved = Number(localStorage.getItem("active_usaha_id"));
+    return Number.isFinite(saved) && saved > 0 ? saved : null;
+  });
+
+  const loadBusinessList = useCallback(async (options?: { force?: boolean }) => {
+    if (!localStorage.getItem("token")) return;
+    if (!options?.force && hasLoadedBusinessList) return;
+
+    const res = await api.get<{ data: ApiUsaha[] }>("/usaha");
+    setBusinessList(res.data.data.map(mapBusiness));
+    setHasLoadedBusinessList(true);
+  }, [hasLoadedBusinessList]);
+
+  const loadCurrentUser = useCallback(async (options?: { force?: boolean }) => {
+    if (!localStorage.getItem("token")) return;
+    if (!options?.force && currentUser) return;
+
+    const res = await api.get<{
+      user: {
+        user_id: number;
+        nama: string;
+        email: string;
+        id_role: number;
+      };
+    }>("/me");
+
+    setCurrentUser({
+      id: res.data.user.user_id,
+      name: res.data.user.nama,
+      email: res.data.user.email,
+      id_role: res.data.user.id_role,
+      created_at: null,
+    });
+  }, [currentUser]);
+
+  const setActiveBusiness = (business: BusinessData) => {
+    setActiveBusinessId(business.idUsaha);
+    setActiveBusinessName(business.namaUsaha);
+    localStorage.setItem("active_usaha_id", String(business.idUsaha));
+    localStorage.setItem("active_usaha_name", business.namaUsaha);
+  };
 
   /* =========================================================
      ✨ HANDLE BACK/FORWARD BROWSER
@@ -120,6 +224,29 @@ export default function App() {
       window.removeEventListener("popstate", handlePopState);
     };
   }, []);
+
+  useEffect(() => {
+    if (BUSINESS_DATA_PAGES.includes(currentPage)) {
+      let cancelled = false;
+
+      queueMicrotask(() => {
+        if (cancelled) return;
+
+        Promise.allSettled([loadBusinessList(), loadCurrentUser()]).then((results) => {
+          if (cancelled) return;
+
+          if (results[0].status === "rejected") {
+            setBusinessList([]);
+            setHasLoadedBusinessList(false);
+          }
+        });
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [currentPage, loadBusinessList, loadCurrentUser]);
 
   /* =========================================================
      ✨ NAVIGATE
@@ -138,8 +265,15 @@ export default function App() {
   ========================================================= */
 
   const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("active_usaha_id");
+    localStorage.removeItem("active_usaha_name");
     setCurrentPage("home");
     setActiveBusinessName("");
+    setActiveBusinessId(null);
+    setCurrentUser(null);
+    setBusinessList([]);
+    setHasLoadedBusinessList(false);
 
     window.history.pushState({}, "", "/");
 
@@ -189,36 +323,36 @@ export default function App() {
 
               /* USER DASHBOARD */
               case "dashboard":
-                return <Dashboard Maps={navigate} businessList={businessList} setBusinessList={setBusinessList} setActiveBusinessName={setActiveBusinessName} logout={logout} />;
+                return <Dashboard Maps={navigate} businessList={businessList} setBusinessList={setBusinessList} setActiveBusiness={setActiveBusiness} refreshBusinessList={() => loadBusinessList({ force: true })} logout={logout} currentUser={currentUser} />;
 
               /* UPLOAD */
               case "upload":
-                return <TambahUsaha isOpen={true} onClose={() => navigate("dashboard")} setBusinessList={setBusinessList} />;
+                return <TambahUsaha isOpen={true} onClose={() => navigate("dashboard")} setBusinessList={setBusinessList} onCreated={() => loadBusinessList({ force: true })} />;
 
-              /* FORM STEPS */
               case "step1":
               case "step2":
               case "step3":
-              case "step4":
+              case "step4": {
                 const stepNum = parseInt(currentPage.replace("step", "")) as 1 | 2 | 3 | 4;
 
-                return <FormPertanyaan navigate={navigate} step={stepNum} />;
+                return <FormPertanyaan key={currentPage} navigate={navigate} step={stepNum} idUsaha={activeBusinessId} refreshBusinessList={() => loadBusinessList({ force: true })} />;
+              }
 
               /* ANALISIS */
               case "analisis":
-                return <AnalisisESG navigate={navigate} namaUsaha={activeBusinessName} />;
+                return <AnalisisESG navigate={navigate} namaUsaha={activeBusinessName || localStorage.getItem("active_usaha_name") || ""} idUsaha={activeBusinessId} />;
 
               /* PENGAJUAN */
               case "pengajuan-kredit":
-                return <PengajuanKreditHijau navigate={navigate} namaUsaha={activeBusinessName} />;
+                return <PengajuanKreditHijau navigate={navigate} namaUsaha={activeBusinessName || localStorage.getItem("active_usaha_name") || ""} idUsaha={activeBusinessId} />;
 
               /* RIWAYAT */
               case "riwayat":
-                return <RiwayatEvaluasi navigate={navigate} businessList={businessList} logout={logout} />;
+                return <RiwayatEvaluasi navigate={navigate} businessList={businessList} logout={logout} currentUser={currentUser} />;
 
               /* PORTOFOLIO */
               case "portofolio":
-                return <PortofolioUsaha navigate={navigate} businessList={businessList} logout={logout} />;
+                return <PortofolioUsaha navigate={navigate} businessList={businessList} logout={logout} currentUser={currentUser} />;
 
               /* ADMIN LOGIN */
               case "login-admin":

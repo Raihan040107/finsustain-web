@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { isAxiosError } from "axios";
 import type { PageName } from "../App";
 import Toast, { type ToastType } from "../components/ui/Toast";
+import api from "../lib/api";
 
 interface RegisterProps {
   navigate: (page: PageName) => void;
@@ -11,6 +13,7 @@ export default function Register({ navigate }: RegisterProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // ✨ STATE UNTUK TOAST NOTIFICATION
   const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType }>({
@@ -19,20 +22,39 @@ export default function Register({ navigate }: RegisterProps) {
     type: "success",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Munculin Toast
-    setToast({
-      show: true,
-      message: `Registrasi Berhasil! Selamat datang, ${namaLengkap}.`,
-      type: "success"
-    });
+    if (isSubmitting) return;
 
-    // Kasih jeda 1.5 detik biar user bisa baca Toast-nya sebelum dilempar ke Dashboard
-    setTimeout(() => {
+    try {
+      setIsSubmitting(true);
+
+      const username = email.split("@")[0] || namaLengkap.toLowerCase().replace(/\s+/g, "");
+      const response = await api.post<{ token: string }>("/register", {
+        nama: namaLengkap,
+        username,
+        email,
+        password,
+        password_confirmation: password,
+      });
+
+      localStorage.setItem("token", response.data.token);
       navigate("dashboard");
-    }, 1500);
+    } catch (err) {
+      let message = "Registrasi gagal. Cek kembali data Anda.";
+
+      if (isAxiosError<{ message?: string; errors?: Record<string, string[]> }>(err)) {
+        const errors = err.response?.data.errors;
+        message = errors ? Object.values(errors)[0]?.[0] ?? message : err.response?.data.message ?? message;
+      }
+
+      setToast({
+        show: true,
+        message,
+        type: "error",
+      });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -135,9 +157,10 @@ export default function Register({ navigate }: RegisterProps) {
 
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-md tracking-wide mt-2"
+              disabled={isSubmitting}
+              className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] disabled:opacity-60 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md tracking-wide mt-2"
             >
-              Daftar Sekarang
+              {isSubmitting ? "Memproses..." : "Daftar Sekarang"}
             </button>
           </form>
 

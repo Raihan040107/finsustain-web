@@ -4,17 +4,10 @@ interface PortofolioUsahaProps {
   navigate: (page: PageName) => void;
   businessList: BusinessData[];
   logout: () => void;
+  currentUser?: { name: string; email: string } | null;
 }
 
-const sectorLabels = [
-  'Teknologi',
-  'Manufaktur',
-  'Energi',
-  'Pertanian',
-  'Kesehatan',
-];
-
-export default function PortofolioUsaha({ navigate, businessList, logout }: PortofolioUsahaProps) {
+export default function PortofolioUsaha({ navigate, businessList, logout, currentUser }: PortofolioUsahaProps) {
   return (
     <div className="min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased flex flex-col md:flex-row">
       <aside className="w-full md:w-64 bg-[#232323] border-r border-white/[0.05] p-6 flex flex-col shrink-0">
@@ -62,10 +55,10 @@ export default function PortofolioUsaha({ navigate, businessList, logout }: Port
 
         <div className="pt-6 border-t border-white/[0.05] mt-auto">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-9 h-9 rounded-full bg-[#4a4a4a] flex items-center justify-center text-sm font-bold border border-white/10">U</div>
+            <div className="w-9 h-9 rounded-full bg-[#4a4a4a] flex items-center justify-center text-sm font-bold border border-white/10">{(currentUser?.name ?? 'U').charAt(0).toUpperCase()}</div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">User Name</p>
-              <p className="text-xs text-[#b0a89e] truncate">Pemilik UMKM</p>
+              <p className="text-sm font-bold text-white truncate">{currentUser?.name ?? 'Pengguna'}</p>
+              <p className="text-xs text-[#b0a89e] truncate">{currentUser?.email ?? 'Pemilik UMKM'}</p>
             </div>
           </div>
           <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-[#e05c2a] hover:bg-[#f06b35]/10 transition-colors text-sm font-medium text-left">
@@ -96,9 +89,9 @@ export default function PortofolioUsaha({ navigate, businessList, logout }: Port
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {businessList.map((business, index) => {
+              {businessList.map((business) => {
                 const isVerified = business.status === 'Diverifikasi';
-                const sector = sectorLabels[index % sectorLabels.length];
+                const sector = business.bidangUsaha;
 
                 return (
                   <article key={business.id} className="rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-6 shadow-[0_18px_45px_-25px_rgba(0,0,0,0.65)] transition-all hover:border-[#e05c2a]/30">
@@ -119,7 +112,7 @@ export default function PortofolioUsaha({ navigate, businessList, logout }: Port
                       </div>
                       <div className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-4">
                         <p className="text-[0.75rem] uppercase tracking-[0.18em] mb-1">Status Usaha</p>
-                        <p className="text-white font-semibold">{sector}</p>
+                        <p className="text-white font-semibold">{business.status}</p>
                       </div>
                     </div>
 

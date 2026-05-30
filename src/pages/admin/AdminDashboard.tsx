@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../lib/api";
-import type { Pertanyaan, User } from "../../types";
+import type { AdminUsaha, Pertanyaan, User } from "../../types";
 
 import Sidebar from "../../components/admin/Sidebar";
 import Topbar from "../../components/admin/Topbar";
@@ -8,10 +8,11 @@ import OverviewPage from "./OverviewPage";
 import PertanyaanPage from "./AdminPertanyaan";
 import UsersPage from "./UsersPage";
 import ComingSoonPage from "./ComingSoonPage";
+import VerifikasiUsahaPage from "./VerifikasiUsahaPage";
 
 import "../../styles/admin.css";
 
-type PageKey = "overview" | "pertanyaan" | "artikel" | "kategori" | "users" | "roles" | "settings" | "logs";
+type PageKey = "overview" | "pertanyaan" | "verifikasi" | "artikel" | "kategori" | "users" | "roles" | "settings" | "logs";
 
 const PAGE_META: Record<PageKey, { title: string; subtitle: string }> = {
   overview: {
@@ -22,6 +23,11 @@ const PAGE_META: Record<PageKey, { title: string; subtitle: string }> = {
   pertanyaan: {
     title: "Manajemen Pertanyaan",
     subtitle: "Konten › Pertanyaan",
+  },
+
+  verifikasi: {
+    title: "Verifikasi Usaha",
+    subtitle: "Pengguna > Verifikasi Dokumen",
   },
 
   artikel: {
@@ -62,9 +68,9 @@ export default function AdminDashboard() {
 
   const [users, setUsers] = useState<User[]>([]);
 
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [usaha, setUsaha] = useState<AdminUsaha[]>([]);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   async function loadPertanyaan() {
     const res = await api.get<{
@@ -86,18 +92,28 @@ export default function AdminDashboard() {
     }
   }
 
+  async function loadUsaha() {
+    const res = await api.get<{
+      data: AdminUsaha[];
+    }>("/admin/usaha");
+
+    setUsaha(res.data.data);
+  }
+
   useEffect(() => {
+    let cancelled = false;
+
     async function init() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.replace("/login/admin");
+
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          window.location.replace("/login/admin");
-
-          return;
-        }
-
-        const me = await api.get("/me");
+        const me = await api.get<{ user: { id_role: number } }>("/me");
 
         if (me.data.user.id_role !== 2) {
           localStorage.removeItem("token");
@@ -107,19 +123,23 @@ export default function AdminDashboard() {
           return;
         }
 
-        setIsCheckingAuth(false);
+        if (!cancelled) {
+          setIsReady(true);
+        }
 
-        await Promise.all([loadPertanyaan(), loadUsers()]);
+        await Promise.allSettled([loadPertanyaan(), loadUsers(), loadUsaha()]);
       } catch {
         localStorage.removeItem("token");
 
         window.location.replace("/login/admin");
-      } finally {
-        setIsLoading(false);
       }
     }
 
     init();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleLogout() {
@@ -132,36 +152,23 @@ export default function AdminDashboard() {
     }
   }
 
-  if (isCheckingAuth) {
-    return (
-      <div className="admin-loading">
-        <i className="ti ti-loader-2 spin" aria-hidden="true" />
-        <p>Memverifikasi akses...</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="admin-loading">
-        <i className="ti ti-loader-2 spin" aria-hidden="true" />
-        <p>Memuat data...</p>
-      </div>
-    );
-  }
+  if (!isReady) return null;
 
   const meta = PAGE_META[activePage];
 
   function renderPage() {
     switch (activePage) {
       case "overview":
-        return <OverviewPage totalPertanyaan={pertanyaan.length} />;
+        return <OverviewPage totalPertanyaan={pertanyaan.length} users={users} usaha={usaha} />;
 
       case "pertanyaan":
         return <PertanyaanPage />;
 
       case "users":
         return <UsersPage users={users} />;
+
+      case "verifikasi":
+        return <VerifikasiUsahaPage usaha={usaha} onUpdated={loadUsaha} />;
 
       case "artikel":
         return <ComingSoonPage icon="file-text" label="Manajemen Artikel" />;

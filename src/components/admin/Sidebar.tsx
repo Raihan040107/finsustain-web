@@ -21,6 +21,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Manajemen Pengguna",
     items: [
+      { key: "verifikasi", label: "Verifikasi Usaha", icon: "building-check" },
       { key: "users", label: "Daftar User", icon: "users" },
       { key: "roles", label: "Role & Akses", icon: "shield" },
     ],

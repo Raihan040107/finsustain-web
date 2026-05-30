@@ -62,10 +62,12 @@ export default function UsersPage({ users }: UsersPageProps) {
                     <span className={`role-badge ${user.id_role === 2 ? "role-admin" : "role-user"}`}>{user.id_role === 2 ? "Admin" : "User"}</span>
                   </td>
                   <td className="text-muted">
-                    {new Date(user.created_at).toLocaleDateString("id-ID", {
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {user.created_at
+                      ? new Date(user.created_at).toLocaleDateString("id-ID", {
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "-"}
                   </td>
                 </tr>
               ))}

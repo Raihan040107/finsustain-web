@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { isAxiosError } from "axios";
 import type { PageName } from "../App";
 import Toast, { type ToastType } from "../components/ui/Toast";
+import api from "../lib/api";
 
 interface LoginProps {
   navigate: (page: PageName) => void;
@@ -10,6 +12,7 @@ export default function Login({ navigate }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ✨ STATE UNTUK TOAST NOTIFICATION
   const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType }>({
@@ -18,19 +21,39 @@ export default function Login({ navigate }: LoginProps) {
     type: "success",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
-    setToast({
-      show: true,
-      message: "Login Berhasil! Mengalihkan ke Dashboard...",
-      type: "success",
-    });
+    try {
+      setIsSubmitting(true);
 
-    // Kasih jeda 1.5 detik biar toast kebaca
-    setTimeout(() => {
-      navigate("dashboard");
-    }, 1500);
+      const response = await api.post<{
+        token: string;
+        user: {
+          id_role: number;
+        };
+      }>("/login", {
+        email,
+        password,
+      });
+
+      localStorage.setItem("token", response.data.token);
+      navigate(response.data.user.id_role === 2 ? "dashboard-admin" : "dashboard");
+    } catch (err) {
+      let message = "Login gagal. Periksa email dan password.";
+
+      if (isAxiosError<{ message?: string; errors?: Record<string, string[]> }>(err)) {
+        message = err.response?.data.errors?.email?.[0] ?? err.response?.data.message ?? message;
+      }
+
+      setToast({
+        show: true,
+        message,
+        type: "error",
+      });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -125,9 +148,10 @@ export default function Login({ navigate }: LoginProps) {
 
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-md tracking-wide mt-2"
+              disabled={isSubmitting}
+              className="w-full inline-flex items-center justify-center font-bold text-sm py-3 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] disabled:opacity-60 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md tracking-wide mt-2"
             >
-              Masuk ke Dashboard
+              {isSubmitting ? "Memproses..." : "Masuk ke Dashboard"}
             </button>
           </form>
 

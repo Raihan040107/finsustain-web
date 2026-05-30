@@ -21,22 +21,6 @@
   color: #1a1a2e;
 }
 
-/* ── Loading ── */
-.admin-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  gap: 12px;
-  color: #888;
-  font-size: 14px;
-}
-
-.admin-loading i {
-  font-size: 28px;
-}
-
 /* ── Sidebar ── */
 .sidebar {
   width: 230px;
@@ -190,6 +174,10 @@
   flex-direction: column;
   gap: 18px;
   max-width: 900px;
+}
+
+.page-wide {
+  max-width: 1180px;
 }
 
 /* ── Stat cards ── */
@@ -521,17 +509,6 @@
 }
 
 /* ── Spinner animation ── */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.spin {
-  display: inline-block;
-  animation: spin 0.8s linear infinite;
-}
-
 /* ── Tambahkan di bagian BAWAH admin.css ── */
 
 /* Action buttons di tabel */
@@ -539,6 +516,72 @@
   display: flex;
   justify-content: flex-end;
   gap: 6px;
+}
+
+.action-btns.left {
+  justify-content: flex-start;
+}
+
+.stacked-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #6b6560;
+  font-size: 12px;
+}
+
+.status-approved {
+  background: #edf7f2;
+  color: #1e6e47;
+  border: 1px solid #a3d9bc;
+}
+
+.status-pending {
+  background: #fff7ed;
+  color: #c4622d;
+  border: 1px solid #fed7aa;
+}
+
+.status-rejected {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.btn-small {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    background 0.15s;
+}
+
+.btn-small:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-approve {
+  background: #edf7f2;
+  border-color: #a3d9bc;
+  color: #1e6e47;
+}
+
+.btn-reject {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
 }
 
 .btn-icon {

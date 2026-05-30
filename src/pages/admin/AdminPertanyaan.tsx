@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../lib/api";
+import { invalidatePertanyaanCache } from "../../lib/pertanyaanCache";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -89,7 +90,15 @@ export default function AdminPertanyaan() {
   }, []);
 
   useEffect(() => {
-    fetchPertanyaan();
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (!cancelled) void fetchPertanyaan();
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [fetchPertanyaan]);
 
   // ── Helper notif ──────────────────────────────────────────────────────────────
@@ -210,6 +219,7 @@ export default function AdminPertanyaan() {
         showNotif("Pertanyaan berhasil diperbarui.", true);
       }
 
+      invalidatePertanyaanCache();
       closeModal();
       await fetchPertanyaan();
     } catch {
@@ -225,6 +235,7 @@ export default function AdminPertanyaan() {
     try {
       await api.delete(`/pertanyaan/${id}`);
       showNotif("Pertanyaan berhasil dihapus.", true);
+      invalidatePertanyaanCache();
       setConfirmDelete(null);
       await fetchPertanyaan();
     } catch {

@@ -5,8 +5,27 @@ interface IndexProps {
   navigate: (page: PageName) => void;
 }
 
+const FAQ_DATA = [
+  {
+    question: "Apa saja syarat untuk mengajukan pendanaan hijau di F-Tech?",
+    answer: "Anda hanya perlu menyiapkan dokumen legalitas usaha dasar, laporan operasional atau keuangan sederhana, dan mengisi kuesioner indikator hijau yang telah kami sediakan di platform.",
+  },
+  {
+    question: "Berapa lama proses evaluasi skor ESG usaha saya?",
+    answer: "Proses evaluasi dilakukan secara instan! Algoritma AI kami akan langsung mengalkulasi skor komitmen hijau Anda sesaat setelah Anda menyelesaikan form pertanyaan.",
+  },
+  {
+    question: "Apakah data laporan keuangan dan operasional saya aman?",
+    answer: "Sangat aman. Semua data yang Anda unggah dienkripsi dengan standar keamanan industri tingkat tinggi dan tidak akan disebarluaskan tanpa persetujuan eksplisit dari Anda.",
+  },
+  {
+    question: "Bagaimana cara F-Tech menghubungkan bisnis saya dengan investor?",
+    answer: "Setelah skor ESG Anda diterbitkan, profil bisnis hijau Anda akan otomatis masuk ke dalam direktori portofolio eksklusif yang diakses oleh puluhan bank dan lembaga pendanaan internasional mitra kami.",
+  },
+];
+
 export default function Index({ navigate }: IndexProps) {
-  const [isLoggedIn] = useState<boolean>(false);
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [activeNav, setActiveNav] = useState<string>("beranda");
 
@@ -35,25 +54,6 @@ export default function Index({ navigate }: IndexProps) {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  const faqData = [
-    {
-      question: "Apa saja syarat untuk mengajukan pendanaan hijau di F-Tech?",
-      answer: "Anda hanya perlu menyiapkan dokumen legalitas usaha dasar, laporan operasional atau keuangan sederhana, dan mengisi kuesioner indikator hijau yang telah kami sediakan di platform.",
-    },
-    {
-      question: "Berapa lama proses evaluasi skor ESG usaha saya?",
-      answer: "Proses evaluasi dilakukan secara instan! Algoritma AI kami akan langsung mengalkulasi skor komitmen hijau Anda sesaat setelah Anda menyelesaikan form pertanyaan.",
-    },
-    {
-      question: "Apakah data laporan keuangan dan operasional saya aman?",
-      answer: "Sangat aman. Semua data yang Anda unggah dienkripsi dengan standar keamanan industri tingkat tinggi dan tidak akan disebarluaskan tanpa persetujuan eksplisit dari Anda.",
-    },
-    {
-      question: "Bagaimana cara F-Tech menghubungkan bisnis saya dengan investor?",
-      answer: "Setelah skor ESG Anda diterbitkan, profil bisnis hijau Anda akan otomatis masuk ke dalam direktori portofolio eksklusif yang diakses oleh puluhan bank dan lembaga pendanaan internasional mitra kami.",
-    },
-  ];
 
   return (
     <div id="page-home" className="block min-h-screen bg-[#2d2d2d] text-[#f0ece8] font-body antialiased overflow-y-auto pt-[76px]">
@@ -464,7 +464,7 @@ export default function Index({ navigate }: IndexProps) {
           </div>
 
           <div className="space-y-4">
-            {faqData.map((faq, index) => {
+            {FAQ_DATA.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
                 <div 

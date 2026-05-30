@@ -1,28 +1,18 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { isAxiosError } from "axios";
 import type { PageName } from "../App";
 import Toast, { type ToastType } from "../components/ui/Toast";
 import api from "../lib/api";
+import { invalidateAnalysisCache, setCachedAnalysis } from "../lib/analysisCache";
+import { getPertanyaan, type Pertanyaan } from "../lib/pertanyaanCache";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-
-interface OpsiJawaban {
-  opsi_id: number;
-  label: string;
-  teks: string;
-  nilai: number;
-}
-
-interface Pertanyaan {
-  pertanyaan_id: number;
-  pertanyaan: string;
-  aspek: "environment" | "social" | "governance";
-  urutan: number;
-  opsi_jawaban: OpsiJawaban[];
-}
 
 interface FormPertanyaanProps {
   navigate: (page: PageName) => void;
   step: number;
+  idUsaha: number | null;
+  refreshBusinessList?: () => Promise<void>;
 }
 
 // ── Label aspek ───────────────────────────────────────────────────────────────
@@ -47,42 +37,48 @@ const ASPEK_CONFIG = {
 
 const ASPEK_ORDER: Array<keyof typeof ASPEK_CONFIG> = ["environment", "social", "governance"];
 
+function routeStepToCurrentStep(step: number) {
+  if (step >= 1 && step <= 3) return step;
+  return 3;
+}
+
 // ── Komponen ──────────────────────────────────────────────────────────────────
 
-export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) {
-  const [currentStep, setCurrentStep] = useState(1);
+export default function FormPertanyaan({ navigate, step, idUsaha, refreshBusinessList }: FormPertanyaanProps) {
+  const [currentStep, setCurrentStep] = useState(() => routeStepToCurrentStep(step));
   const [pertanyaan, setPertanyaan] = useState<Pertanyaan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
-  // Sinkronisasi step dari router App.tsx
-  useEffect(() => {
-    if (step >= 1 && step <= 3) setCurrentStep(step);
-    else if (step === 4) setCurrentStep(3);
-  }, [step]);
-
   // Fetch pertanyaan + opsi dari API
   useEffect(() => {
+    let cancelled = false;
+
     async function load() {
       try {
         setIsLoading(true);
-        const res = await api.get<{ data: Pertanyaan[] }>("/pertanyaan");
-        setPertanyaan(res.data.data);
+        const data = await getPertanyaan();
+        if (cancelled) return;
+
+        setPertanyaan(data);
         // Init answers: semua kosong
-        const init: Record<number, string> = {};
-        res.data.data.forEach((p) => {
-          init[p.pertanyaan_id] = "";
-        });
+        const init = Object.fromEntries(data.map((p) => [p.pertanyaan_id, ""])) as Record<number, string>;
         setAnswers(init);
       } catch {
-        setError("Gagal memuat pertanyaan. Coba refresh halaman.");
+        if (!cancelled) setError("Gagal memuat pertanyaan. Coba refresh halaman.");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }
+
     load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Kelompokkan pertanyaan per aspek
@@ -136,8 +132,17 @@ export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) 
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!idUsaha) {
+      setToast({
+        message: "Pilih usaha yang sudah diverifikasi dari dashboard terlebih dahulu.",
+        type: "warning",
+      });
+      navigate("dashboard");
+      return;
+    }
 
     // Validasi global: semua aspek harus lengkap
     const incompleteStep = ASPEK_ORDER.findIndex((a) => !isAspekComplete(a));
@@ -153,14 +158,61 @@ export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) 
       return;
     }
 
-    setToast({
-      message: "Evaluasi ESG Berhasil Disubmit! Menghitung Skor Anda...",
-      type: "success",
-    });
+    try {
+      setIsSubmitting(true);
 
-    setTimeout(() => {
+      const jawaban = pertanyaan.map((p) => {
+        const selectedLabel = answers[p.pertanyaan_id];
+        const selectedOption = p.opsi_jawaban.find((opsi) => opsi.label === selectedLabel);
+
+        return {
+          pertanyaan_id: p.pertanyaan_id,
+          jawaban: selectedOption ? `${selectedOption.label}. ${selectedOption.teks}` : selectedLabel,
+        };
+      });
+
+      const res = await api.post<{ ai_success: boolean; message: string; ai_message?: string; gemini_analysis?: unknown }>("/jawaban", {
+        id_usaha: idUsaha,
+        jawaban,
+      });
+
+      if (!res.data.ai_success) {
+        setToast({
+          message: res.data.ai_message ?? res.data.message,
+          type: "warning",
+        });
+        return;
+      }
+
+      if (res.data.gemini_analysis) {
+        setCachedAnalysis(idUsaha, res.data.gemini_analysis);
+      } else {
+        invalidateAnalysisCache(idUsaha);
+      }
+
+      setToast({
+        message: "Evaluasi ESG berhasil dianalisis.",
+        type: "success",
+      });
+
+      const refresh = refreshBusinessList?.();
+      if (refresh) void refresh.catch(() => undefined);
+
       navigate("analisis");
-    }, 1500);
+    } catch (err) {
+      let message = "Gagal submit evaluasi. Pastikan usaha sudah diverifikasi admin.";
+
+      if (isAxiosError<{ message?: string }>(err)) {
+        message = err.response?.data.message ?? message;
+      }
+
+      setToast({
+        message,
+        type: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // ── Loading state ──────────────────────────────────────────────────────────
@@ -273,9 +325,10 @@ export default function FormPertanyaan({ navigate, step }: FormPertanyaanProps) 
             ) : (
               <button
                 type="submit"
-                className="flex-1 inline-flex items-center justify-center font-bold text-xs py-3.5 rounded-xl bg-green-600 text-white hover:bg-green-500 transition-all cursor-pointer shadow-md uppercase tracking-wider"
+                disabled={isSubmitting}
+                className="flex-1 inline-flex items-center justify-center font-bold text-xs py-3.5 rounded-xl bg-green-600 text-white hover:bg-green-500 transition-all cursor-pointer shadow-md uppercase tracking-wider disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Submit Evaluasi ✔
+                {isSubmitting ? "Menganalisis..." : "Submit Evaluasi"}
               </button>
             )}
           </div>

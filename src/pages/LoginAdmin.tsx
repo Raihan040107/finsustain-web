@@ -183,22 +183,13 @@ function AdminLogin() {
                 <div className="field-border" aria-hidden="true" />
               </div>
 
-              <button type="submit" className={`submit-btn ${isSubmitting ? "loading" : ""}`} disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <span className="spinner" aria-hidden="true" />
-                    Memverifikasi...
-                  </>
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                      <polyline points="10 17 15 12 10 7" />
-                      <line x1="15" y1="12" x2="3" y2="12" />
-                    </svg>
-                    Masuk sebagai Admin
-                  </>
-                )}
+              <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                Masuk sebagai Admin
               </button>
             </form>
 
@@ -563,18 +554,6 @@ function AdminLogin() {
         .submit-btn:hover::before { opacity: 1; }
         .submit-btn:active:not(:disabled) { transform: translateY(0); }
         .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
-        .submit-btn.loading { background-position: 100% 100%; }
-
-        /* Spinner */
-        .spinner {
-          width: 16px; height: 16px; border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: #fff;
-          animation: spin 0.7s linear infinite;
-          flex-shrink: 0;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         /* ─── Back Link ────────────────────────────────────────── */
         .back-link {
           margin-top: 16px;
