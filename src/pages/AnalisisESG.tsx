@@ -60,6 +60,11 @@ export default function AnalisisESG({ navigate, namaUsaha, idUsaha }: AnalisisES
     let cancelled = false;
 
     async function loadAnalysis() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("login");
+        return;
+      }
       if (!idUsaha) {
         setError("Pilih usaha yang sudah diverifikasi dari dashboard terlebih dahulu.");
         setIsLoading(false);
@@ -216,11 +221,19 @@ export default function AnalisisESG({ navigate, namaUsaha, idUsaha }: AnalisisES
         </div>
 
         <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <button type="button" onClick={() => navigate("step1")} className="w-full sm:w-auto text-center text-xs font-bold text-gray-400 hover:text-white transition-colors py-2 uppercase tracking-wider">
+          <button
+            type="button"
+            onClick={() => navigate("step1")}
+            className="w-full sm:w-auto text-center text-xs font-bold text-gray-400 hover:text-white transition-colors py-2 uppercase tracking-wider"
+          >
             Evaluasi Ulang
           </button>
 
-          <button type="button" onClick={() => navigate("pengajuan-kredit")} className="w-full sm:w-auto inline-flex items-center justify-center font-bold text-xs px-6 py-4 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-[0_8px_20px_-4px_rgba(224,92,42,0.4)] tracking-wider uppercase">
+          <button
+            type="button"
+            onClick={() => navigate("pengajuan-kredit")}
+            className="w-full sm:w-auto inline-flex items-center justify-center font-bold text-xs px-6 py-4 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-[0_8px_20px_-4px_rgba(224,92,42,0.4)] tracking-wider uppercase"
+          >
             Lanjut Kredit Hijau
           </button>
         </div>
