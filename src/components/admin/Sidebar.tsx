@@ -14,7 +14,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Manajemen Konten",
     items: [
       { key: "pertanyaan", label: "Pertanyaan", icon: "message-circle" },
-      { key: "artikel", label: "Artikel", icon: "file-text" },
+      { key: "faq", label: "Edit FAQ", icon: "file-text" },
       { key: "kategori", label: "Kategori", icon: "tag" },
     ],
   },

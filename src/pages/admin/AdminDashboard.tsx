@@ -9,52 +9,45 @@ import PertanyaanPage from "./AdminPertanyaan";
 import UsersPage from "./UsersPage";
 import ComingSoonPage from "./ComingSoonPage";
 import VerifikasiUsahaPage from "./VerifikasiUsahaPage";
+import EditFaqPage from "./EditFaqPage";
 
 import "../../styles/admin.css";
 
-type PageKey = "overview" | "pertanyaan" | "verifikasi" | "artikel" | "kategori" | "users" | "roles" | "settings" | "logs";
+type PageKey = "overview" | "pertanyaan" | "verifikasi" | "faq" | "kategori" | "users" | "roles" | "settings" | "logs";
 
 const PAGE_META: Record<PageKey, { title: string; subtitle: string }> = {
   overview: {
     title: "Overview",
     subtitle: "Ringkasan sistem",
   },
-
   pertanyaan: {
     title: "Manajemen Pertanyaan",
     subtitle: "Konten › Pertanyaan",
   },
-
   verifikasi: {
     title: "Verifikasi Usaha",
-    subtitle: "Pengguna > Verifikasi Dokumen",
+    subtitle: "Pengguna › Verifikasi Dokumen",
   },
-
-  artikel: {
-    title: "Artikel",
-    subtitle: "Konten › Artikel",
+  faq: {
+    title: "Edit FAQ",
+    subtitle: "Konten › Pertanyaan Umum",
   },
-
   kategori: {
     title: "Kategori",
     subtitle: "Konten › Kategori",
   },
-
   users: {
     title: "Manajemen User",
     subtitle: "Pengguna › Daftar User",
   },
-
   roles: {
     title: "Role & Akses",
     subtitle: "Pengguna › Role",
   },
-
   settings: {
     title: "Pengaturan",
     subtitle: "Sistem › Pengaturan",
   },
-
   logs: {
     title: "Log Aktivitas",
     subtitle: "Sistem › Log",
@@ -65,27 +58,18 @@ export default function AdminDashboard() {
   const [activePage, setActivePage] = useState<PageKey>("overview");
 
   const [pertanyaan, setPertanyaan] = useState<Pertanyaan[]>([]);
-
   const [users, setUsers] = useState<User[]>([]);
-
   const [usaha, setUsaha] = useState<AdminUsaha[]>([]);
-
   const [isReady, setIsReady] = useState(false);
 
   async function loadPertanyaan() {
-    const res = await api.get<{
-      data: Pertanyaan[];
-    }>("/pertanyaan");
-
+    const res = await api.get<{ data: Pertanyaan[] }>("/pertanyaan");
     setPertanyaan(res.data.data);
   }
 
   async function loadUsers() {
     try {
-      const res = await api.get<{
-        data: User[];
-      }>("/admin/users");
-
+      const res = await api.get<{ data: User[] }>("/admin/users");
       setUsers(res.data.data);
     } catch {
       // endpoint users mungkin belum ada
@@ -93,10 +77,7 @@ export default function AdminDashboard() {
   }
 
   async function loadUsaha() {
-    const res = await api.get<{
-      data: AdminUsaha[];
-    }>("/admin/usaha");
-
+    const res = await api.get<{ data: AdminUsaha[] }>("/admin/usaha");
     setUsaha(res.data.data);
   }
 
@@ -105,38 +86,26 @@ export default function AdminDashboard() {
 
     async function init() {
       const token = localStorage.getItem("token");
-
       if (!token) {
         window.location.replace("/login/admin");
-
         return;
       }
-
       try {
         const me = await api.get<{ user: { id_role: number } }>("/me");
-
         if (me.data.user.id_role !== 2) {
           localStorage.removeItem("token");
-
           window.location.replace("/login/admin");
-
           return;
         }
-
-        if (!cancelled) {
-          setIsReady(true);
-        }
-
+        if (!cancelled) setIsReady(true);
         await Promise.allSettled([loadPertanyaan(), loadUsers(), loadUsaha()]);
       } catch {
         localStorage.removeItem("token");
-
         window.location.replace("/login/admin");
       }
     }
 
     init();
-
     return () => {
       cancelled = true;
     };
@@ -147,7 +116,6 @@ export default function AdminDashboard() {
       await api.post("/logout");
     } finally {
       localStorage.removeItem("token");
-
       window.location.replace("/login/admin");
     }
   }
@@ -160,18 +128,14 @@ export default function AdminDashboard() {
     switch (activePage) {
       case "overview":
         return <OverviewPage totalPertanyaan={pertanyaan.length} users={users} usaha={usaha} />;
-
       case "pertanyaan":
         return <PertanyaanPage />;
-
       case "users":
         return <UsersPage users={users} />;
-
       case "verifikasi":
         return <VerifikasiUsahaPage usaha={usaha} onUpdated={loadUsaha} />;
-
-      case "artikel":
-        return <ComingSoonPage icon="file-text" label="Manajemen Artikel" />;
+      case "faq":
+        return <EditFaqPage />;
 
       case "kategori":
         return <ComingSoonPage icon="tag" label="Manajemen Kategori" />;
@@ -190,10 +154,8 @@ export default function AdminDashboard() {
   return (
     <div className="admin-shell">
       <Sidebar activePage={activePage} onNavigate={(page) => setActivePage(page as PageKey)} />
-
       <div className="admin-main">
         <Topbar title={meta.title} subtitle={meta.subtitle} onLogout={handleLogout} />
-
         <main className="admin-content">{renderPage()}</main>
       </div>
     </div>
