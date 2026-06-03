@@ -22,6 +22,14 @@ interface StudiKasusItem {
   order: number;
 }
 
+interface KeunggulanItem {
+  id: number;
+  nomor: string;
+  judul: string;
+  deskripsi: string;
+  order: number;
+}
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
 
 export default function Index({ navigate }: IndexProps) {
@@ -30,6 +38,7 @@ export default function Index({ navigate }: IndexProps) {
   const [activeNav, setActiveNav] = useState<string>("beranda");
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [studiKasus, setStudiKasus] = useState<StudiKasusItem[]>([]);
+  const [keunggulan, setKeunggulan] = useState<KeunggulanItem[]>([]);
 
   // ── Scroll reveal helper ─────────────────────────────────────────────────
 
@@ -131,6 +140,37 @@ export default function Index({ navigate }: IndexProps) {
             deskripsi: "Melakukan pembuktian siklus daur ulang kemasan limbah polimer tinggi lewat sistem transparansi audit rantai pasok F-Tech.",
             pencapaian: ["Kredit Sindikasi Rp4.2 Miliar", "240 Ton Sampah Berhasil Didaur Ulang"],
             order: 2,
+          },
+        ]);
+      });
+
+    fetch(`${API_BASE}/keunggulan`, {
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => res.json())
+      .then((json) => setKeunggulan(json.data ?? []))
+      .catch(() => {
+        setKeunggulan([
+          {
+            id: 1,
+            nomor: "01",
+            judul: "Suku Bunga Preferensial",
+            deskripsi: "Dapatkan keringanan nilai suku bunga pinjaman modal yang jauh lebih rendah bagi bisnis dengan skor komitmen pelestarian hijau yang tinggi.",
+            order: 1,
+          },
+          {
+            id: 2,
+            nomor: "02",
+            judul: "Pelaporan Otomatis",
+            deskripsi: "Sistem kami akan mengekstrak data dari dokumen laporan operasional harian Anda menjadi berkas siap pakai untuk dikirimkan langsung ke investor.",
+            order: 2,
+          },
+          {
+            id: 3,
+            nomor: "03",
+            judul: "Ekosistem Investor Luas",
+            deskripsi: "Tembus akses pendanaan lintas negara ke puluhan lembaga perbankan korporasi dan institusi Ventura yang mencari portfolio berdampak iklim positif.",
+            order: 3,
           },
         ]);
       });
@@ -390,6 +430,7 @@ export default function Index({ navigate }: IndexProps) {
       </section>
 
       {/* WHY US SECTION */}
+      {/* WHY US SECTION */}
       <section className="w-full bg-white/[0.01] border-t border-white/[0.06] py-24 md:py-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div data-reveal className="text-center max-w-2xl mx-auto mb-16 space-y-3 opacity-0 translate-y-10 transition-all duration-1000 ease-out">
@@ -400,38 +441,28 @@ export default function Index({ navigate }: IndexProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div
-              data-reveal
-              className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-100"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">01</div>
-              <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Suku Bunga Preferensial</h3>
-              <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">
-                Dapatkan keringanan nilai suku bunga pinjaman modal yang jauh lebih rendah bagi bisnis dengan skor komitmen pelestarian hijau yang tinggi.
-              </p>
+          {keunggulan.length === 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] h-[200px] animate-pulse" />
+              ))}
             </div>
-            <div
-              data-reveal
-              className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-200"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">02</div>
-              <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Pelaporan Otomatis</h3>
-              <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">
-                Sistem kami akan mengekstrak data dari dokumen laporan operasional harian Anda menjadi berkas siap pakai untuk dikirimkan langsung ke investor.
-              </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {keunggulan.map((item, index) => (
+                <div
+                  key={item.id}
+                  data-reveal
+                  className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 ease-out"
+                  style={{ transitionDuration: "1000ms", transitionDelay: `${(index + 1) * 100}ms` }}
+                >
+                  <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">{item.nomor}</div>
+                  <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">{item.judul}</h3>
+                  <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">{item.deskripsi}</p>
+                </div>
+              ))}
             </div>
-            <div
-              data-reveal
-              className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] p-8 hover:border-[#e05c2a]/40 hover:-translate-y-1 transition-all duration-300 shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#e05c2a]/10 border border-[#e05c2a]/20 flex items-center justify-center text-[#e05c2a] mb-5 font-bold text-lg">03</div>
-              <h3 className="font-head text-[1.1rem] font-bold text-white mb-2">Ekosistem Investor Luas</h3>
-              <p className="text-[0.88rem] text-[#b0a89e] leading-[1.65]">
-                Tembus akses pendanaan lintas negara ke puluhan lembaga perbankan korporasi dan institusi Ventura yang mencari portfolio berdampak iklim positif.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
