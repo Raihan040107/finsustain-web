@@ -77,6 +77,161 @@ export default function PengajuanKreditHijau({ navigate, namaUsaha, idUsaha }: P
   const pengajuan = analysis?.pengajuan;
   const score = Math.round(Number(analysis?.skor_esg?.total ?? 0));
 
+  const handlePrint = () => {
+    const printContent = `
+      <!DOCTYPE html>
+      <html lang="id">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Pengajuan Kredit Hijau – ${displayName}</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #fff;
+            color: #1a1a1a;
+            padding: 40px;
+          }
+          .header {
+            text-align: center;
+            border-bottom: 3px solid #e05c2a;
+            padding-bottom: 20px;
+            margin-bottom: 32px;
+          }
+          .header h1 {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #1a1a1a;
+          }
+          .header p {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 6px;
+          }
+          .section-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #e05c2a;
+            margin-bottom: 16px;
+          }
+          .card {
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            background: #fafafa;
+          }
+          .card-label {
+            font-size: 10px;
+            color: #888;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 6px;
+          }
+          .card-value-large {
+            font-size: 32px;
+            font-weight: 900;
+            color: #e05c2a;
+          }
+          .card-value {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a1a;
+          }
+          .card-value-green {
+            font-size: 15px;
+            font-weight: 800;
+            color: #059669;
+          }
+          .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+          }
+          .syarat-text {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #444;
+            margin-top: 8px;
+          }
+          .footer {
+            margin-top: 40px;
+            border-top: 1px solid #e5e5e5;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #aaa;
+          }
+          .badge {
+            display: inline-block;
+            background: #e05c2a;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Pengajuan Kredit Hijau</h1>
+          <p>Rekomendasi AI untuk ${displayName}</p>
+          <div class="badge">Skor ESG: ${score} / 100</div>
+        </div>
+
+        <p class="section-title">Detail Rekomendasi Kredit</p>
+
+        <div class="card">
+          <span class="card-label">Plafon Kredit Direkomendasikan</span>
+          <span class="card-value-large">${rupiah(pengajuan?.jumlah_pinjaman)}</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-label">Tenor Direkomendasikan</span>
+            <span class="card-value">${pengajuan?.tenor_bulanan ?? 0} Bulan</span>
+          </div>
+          <div class="card">
+            <span class="card-label">Suku Bunga Khusus</span>
+            <span class="card-value-green">${pengajuan?.tingkat_bunga_khusus ?? 0}%</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="card-label">Syarat ESG</span>
+          <p class="syarat-text">${pengajuan?.syarat_esg || analysis?.rekomendasi || "Belum ada syarat tambahan dari analisis AI."}</p>
+        </div>
+
+        <div class="footer">
+          <span>Dicetak pada: ${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}</span>
+          <span>Dokumen ini dibuat otomatis oleh sistem analisis ESG</span>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank", "width=800,height=700");
+    if (!printWindow) return;
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#2d2d2d] flex items-center justify-center font-body text-white">
@@ -110,9 +265,7 @@ export default function PengajuanKreditHijau({ navigate, namaUsaha, idUsaha }: P
             <h2 className="font-head text-3xl font-black tracking-wide text-white drop-shadow-md uppercase">Pengajuan Kredit Hijau</h2>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-[#e05c2a] rounded-full" />
           </div>
-          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-2">
-            Rekomendasi AI untuk {displayName}
-          </p>
+          <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-2">Rekomendasi AI untuk {displayName}</p>
         </div>
 
         <div className="bg-[#4a4a4a]/40 p-7 rounded-2xl border border-white/5 shadow-inner space-y-7">
@@ -146,13 +299,36 @@ export default function PengajuanKreditHijau({ navigate, namaUsaha, idUsaha }: P
         </div>
 
         <div className="mt-10 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <button type="button" onClick={() => navigate("analisis")} className="w-full sm:w-auto text-center text-xs font-bold text-[#b0a89e] hover:text-white transition-colors py-3 uppercase tracking-wider">
+          <button
+            type="button"
+            onClick={() => navigate("analisis")}
+            className="w-full sm:w-auto text-center text-xs font-bold text-[#b0a89e] hover:text-white transition-colors py-3 uppercase tracking-wider"
+          >
             Lihat Skor ESG
           </button>
 
-          <button type="button" onClick={() => navigate("dashboard")} className="w-full sm:w-auto inline-flex items-center justify-center font-bold text-xs px-8 py-4 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-[0_8px_20px_-4px_rgba(224,92,42,0.4)] tracking-wider uppercase">
-            Kembali ke Dashboard
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-bold text-xs px-8 py-4 rounded-xl bg-[#4a4a4a] text-white hover:bg-[#5a5a5a] transition-all cursor-pointer border border-white/10 tracking-wider uppercase"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" />
+              </svg>
+              Cetak / Simpan PDF
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("dashboard")}
+              className="w-full sm:w-auto inline-flex items-center justify-center font-bold text-xs px-8 py-4 rounded-xl bg-[#e05c2a] text-white hover:bg-[#f06b35] transition-all cursor-pointer shadow-[0_8px_20px_-4px_rgba(224,92,42,0.4)] tracking-wider uppercase"
+            >
+              Kembali ke Dashboard
+            </button>
+          </div>
         </div>
       </div>
     </div>
