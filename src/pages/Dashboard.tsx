@@ -14,11 +14,18 @@ interface DashboardProps {
 
 export default function Dashboard({ Maps, businessList, setBusinessList, setActiveBusiness, refreshBusinessList, logout, currentUser }: DashboardProps) {
   const navigate = Maps;
+  // useEffect(() => {
+  //   if (!currentUser) {
+  //     navigate("login");
+  //   }
+  // }, [currentUser, navigate]);
   useEffect(() => {
-    if (!currentUser) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       navigate("login");
     }
-  }, [currentUser, navigate]);
+  }, [navigate]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleStartEvaluation = (business: BusinessData) => {
