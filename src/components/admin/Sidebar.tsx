@@ -16,6 +16,7 @@ const NAV_GROUPS: NavGroup[] = [
       { key: "pertanyaan", label: "Pertanyaan", icon: "message-circle" },
       { key: "faq", label: "Edit FAQ", icon: "file-text" },
       { key: "kategori", label: "Kategori", icon: "tag" },
+      { key: "studi-kasus", label: "Studi Kasus", icon: "briefcase" },
     ],
   },
   {

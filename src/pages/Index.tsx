@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import type { PageName } from "../App";
 
@@ -13,6 +13,15 @@ interface FAQItem {
   order: number;
 }
 
+interface StudiKasusItem {
+  id: number;
+  nomor: string;
+  nama_usaha: string;
+  deskripsi: string;
+  pencapaian: string[];
+  order: number;
+}
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
 
 export default function Index({ navigate }: IndexProps) {
@@ -20,16 +29,55 @@ export default function Index({ navigate }: IndexProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [activeNav, setActiveNav] = useState<string>("beranda");
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
+  const [studiKasus, setStudiKasus] = useState<StudiKasusItem[]>([]);
 
-  // Fetch FAQ dari API (public endpoint, tidak perlu token)
+  // ── Scroll reveal helper ─────────────────────────────────────────────────
+
+  const attachRevealObserver = useCallback(() => {
+    const elements = Array.from(document.querySelectorAll("[data-reveal]")) as HTMLElement[];
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.classList.remove("opacity-0", "translate-y-10");
+            el.classList.add("opacity-100", "translate-y-0");
+            obs.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // ── Scroll reveal — elemen statis ────────────────────────────────────────
+
   useEffect(() => {
+    return attachRevealObserver();
+  }, [attachRevealObserver]);
+
+  // ── Scroll reveal — re-run saat studiKasus data masuk ───────────────────
+
+  useEffect(() => {
+    if (studiKasus.length === 0) return;
+    return attachRevealObserver();
+  }, [studiKasus, attachRevealObserver]);
+
+  // ── Fetch FAQ & Studi Kasus ──────────────────────────────────────────────
+
+  useEffect(() => {
+    // Fetch FAQ
     fetch(`${API_BASE}/faqs`, {
       headers: { Accept: "application/json" },
     })
       .then((res) => res.json())
       .then((json) => setFaqs(json.data ?? []))
       .catch(() => {
-        // Fallback ke data statis jika API belum tersedia
         setFaqs([
           {
             id: 1,
@@ -59,28 +107,33 @@ export default function Index({ navigate }: IndexProps) {
           },
         ]);
       });
-  }, []);
 
-  useEffect(() => {
-    const elements = Array.from(document.querySelectorAll("[data-reveal]")) as HTMLElement[];
-    if (!elements.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement;
-            el.classList.remove("opacity-0", "translate-y-10");
-            el.classList.add("opacity-100", "translate-y-0");
-            obs.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.12 },
-    );
-
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    // Fetch Studi Kasus
+    fetch(`${API_BASE}/studi-kasus`, {
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => res.json())
+      .then((json) => setStudiKasus(json.data ?? []))
+      .catch(() => {
+        setStudiKasus([
+          {
+            id: 1,
+            nomor: "01",
+            nama_usaha: "Koperasi Tani Agro Lestari",
+            deskripsi: "Mengajukan modal solar panel irigasi mandiri dengan melampirkan berkas sertifikasi organik bebas pestisida kimia berbahaya.",
+            pencapaian: ["Pendanaan Cair Rp850 Juta", "Hemat Biaya Listrik Operasional 35%"],
+            order: 1,
+          },
+          {
+            id: 2,
+            nomor: "02",
+            nama_usaha: "PT Eco Plastik Manufaktur",
+            deskripsi: "Melakukan pembuktian siklus daur ulang kemasan limbah polimer tinggi lewat sistem transparansi audit rantai pasok F-Tech.",
+            pencapaian: ["Kredit Sindikasi Rp4.2 Miliar", "240 Ton Sampah Berhasil Didaur Ulang"],
+            order: 2,
+          },
+        ]);
+      });
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -423,48 +476,46 @@ export default function Index({ navigate }: IndexProps) {
         </div>
       </section>
 
-      {/* CASE STUDY SECTION */}
+      {/* ── CASE STUDY SECTION — DINAMIS ─────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
         <div className="text-center mb-16 space-y-3">
           <div className="text-[0.8rem] font-bold tracking-[0.15em] text-[#e05c2a] uppercase">Studi Kasus</div>
           <h2 className="font-head text-3xl md:text-[2.2rem] font-extrabold text-white">UMKM yang Sukses Bertransisi Hijau</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-100">
-            <div className="bg-[#e05c2a]/10 border-b border-[#e05c2a]/15 p-5 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#e05c2a] flex items-center justify-center font-head font-black text-[0.9rem] text-white">01</div>
-              <h3 className="font-head text-[1rem] font-bold text-white">Koperasi Tani Agro Lestari</h3>
-            </div>
-            <div className="p-6 space-y-4">
-              <p className="text-[0.88rem] text-[#b0a89e] leading-[1.7]">Mengajukan modal solar panel irigasi mandiri dengan melampirkan berkas sertifikasi organik bebas pestisida kimia berbahaya.</p>
-              <div className="flex flex-col gap-2 pt-2">
-                <span className="inline-flex items-center gap-2 bg-[#4caf50]/10 border border-[#4caf50]/20 rounded-full px-4 py-1.5 text-[0.8rem] font-semibold text-[#81c784] w-fit">
-                  ✓ Pendanaan Cair Rp850 Juta
-                </span>
-                <span className="inline-flex items-center gap-2 bg-[#4caf50]/10 border border-[#4caf50]/20 rounded-full px-4 py-1.5 text-[0.8rem] font-semibold text-[#81c784] w-fit">
-                  ✓ Hemat Biaya Listrik Operasional 35%
-                </span>
-              </div>
-            </div>
+
+        {studiKasus.length === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] h-[200px] animate-pulse" />
+            ))}
           </div>
-          <div data-reveal className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out delay-200">
-            <div className="bg-[#e05c2a]/10 border-b border-[#e05c2a]/15 p-5 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#e05c2a] flex items-center justify-center font-head font-black text-[0.9rem] text-white">02</div>
-              <h3 className="font-head text-[1rem] font-bold text-white">PT Eco Plastik Manufaktur</h3>
-            </div>
-            <div className="p-6 space-y-4">
-              <p className="text-[0.88rem] text-[#b0a89e] leading-[1.7]">Melakukan pembuktian siklus daur ulang kemasan limbah polimer tinggi lewat sistem transparansi audit rantai pasok F-Tech.</p>
-              <div className="flex flex-col gap-2 pt-2">
-                <span className="inline-flex items-center gap-2 bg-[#4caf50]/10 border border-[#4caf50]/20 rounded-full px-4 py-1.5 text-[0.8rem] font-semibold text-[#81c784] w-fit">
-                  ✓ Kredit Sindikasi Rp4.2 Miliar
-                </span>
-                <span className="inline-flex items-center gap-2 bg-[#4caf50]/10 border border-[#4caf50]/20 rounded-full px-4 py-1.5 text-[0.8rem] font-semibold text-[#81c784] w-fit">
-                  ✓ 240 Ton Sampah Berhasil Didaur Ulang
-                </span>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {studiKasus.map((item, index) => (
+              <div
+                key={item.id}
+                data-reveal
+                className="bg-white/[0.03] border border-white/[0.08] rounded-[20px] overflow-hidden shadow-sm opacity-0 translate-y-10 transition-all duration-1000 ease-out"
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="bg-[#e05c2a]/10 border-b border-[#e05c2a]/15 p-5 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#e05c2a] flex items-center justify-center font-head font-black text-[0.9rem] text-white">{item.nomor}</div>
+                  <h3 className="font-head text-[1rem] font-bold text-white">{item.nama_usaha}</h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <p className="text-[0.88rem] text-[#b0a89e] leading-[1.7]">{item.deskripsi}</p>
+                  <div className="flex flex-col gap-2 pt-2">
+                    {item.pencapaian.map((p, i) => (
+                      <span key={i} className="inline-flex items-center gap-2 bg-[#4caf50]/10 border border-[#4caf50]/20 rounded-full px-4 py-1.5 text-[0.8rem] font-semibold text-[#81c784] w-fit">
+                        ✓ {p}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
+        )}
       </section>
 
       {/* SDGs SECTION */}
@@ -517,7 +568,6 @@ export default function Index({ navigate }: IndexProps) {
             <p className="text-[0.95rem] text-[#b0a89e]">Punya pertanyaan seputar platform? Temukan jawabannya di bawah ini.</p>
           </div>
 
-          {/* Loading skeleton */}
           {faqs.length === 0 ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (

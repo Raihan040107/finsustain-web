@@ -10,10 +10,11 @@ import UsersPage from "./UsersPage";
 import ComingSoonPage from "./ComingSoonPage";
 import VerifikasiUsahaPage from "./VerifikasiUsahaPage";
 import EditFaqPage from "./EditFaqPage";
+import EditStudiKasusPage from "./EditStudiKasusPage";
 
 import "../../styles/admin.css";
 
-type PageKey = "overview" | "pertanyaan" | "verifikasi" | "faq" | "kategori" | "users" | "roles" | "settings" | "logs";
+type PageKey = "overview" | "pertanyaan" | "verifikasi" | "faq" | "studi-kasus" | "kategori" | "users" | "roles" | "settings" | "logs";
 
 const PAGE_META: Record<PageKey, { title: string; subtitle: string }> = {
   overview: {
@@ -31,6 +32,10 @@ const PAGE_META: Record<PageKey, { title: string; subtitle: string }> = {
   faq: {
     title: "Edit FAQ",
     subtitle: "Konten › Pertanyaan Umum",
+  },
+  "studi-kasus": {
+    title: "Edit Studi Kasus",
+    subtitle: "Konten › Studi Kasus",
   },
   kategori: {
     title: "Kategori",
@@ -136,6 +141,8 @@ export default function AdminDashboard() {
         return <VerifikasiUsahaPage usaha={usaha} onUpdated={loadUsaha} />;
       case "faq":
         return <EditFaqPage />;
+      case "studi-kasus":
+        return <EditStudiKasusPage />;
 
       case "kategori":
         return <ComingSoonPage icon="tag" label="Manajemen Kategori" />;
