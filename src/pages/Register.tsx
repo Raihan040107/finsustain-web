@@ -30,7 +30,9 @@ export default function Register({ navigate }: RegisterProps) {
       setIsSubmitting(true);
 
       const username = email.split("@")[0] || namaLengkap.toLowerCase().replace(/\s+/g, "");
-      const response = await api.post<{ token: string }>("/register", {
+
+      await api.post<{ token: string }>("/register", {
+        // ✅ hapus "const response ="
         nama: namaLengkap,
         username,
         email,
@@ -38,8 +40,6 @@ export default function Register({ navigate }: RegisterProps) {
         password_confirmation: password,
       });
 
-      // localStorage.setItem("token", response.data.token);
-      // navigate("dashboard");
       setToast({
         show: true,
         message: "Registrasi berhasil. Silakan login.",
