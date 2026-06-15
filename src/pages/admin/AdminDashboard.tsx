@@ -13,7 +13,7 @@ import EditFaqPage from "./EditFaqPage";
 import EditStudiKasusPage from "./EditStudiKasusPage";
 import EditKeunggulanPage from "./EditKeunggulanPage";
 
-import "../../styles/admin.css";
+import "../../styles/Admin.css";
 
 type PageKey = "overview" | "pertanyaan" | "verifikasi" | "faq" | "studi-kasus" | "keunggulan" | "kategori" | "users" | "roles" | "settings" | "logs";
 
